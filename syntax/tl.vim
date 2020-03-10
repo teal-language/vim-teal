@@ -24,7 +24,7 @@ endfunction
 
 " Clusters
 syntax cluster luaBase contains=luaComment,luaCommentLong,luaConstant,luaNumber,luaString,luaStringLong,luaBuiltIn
-syntax cluster luaExpr contains=@luaBase,luaTable,luaParen,luaBracket,luaSpecialTable,luaSpecialValue,luaOperator,luaSymbolOperator,luaEllipsis,luaComma,luaFunc,luaFuncCall,luaError
+syntax cluster luaExpr contains=@luaBase,luaTable,luaParen,luaBracket,luaSpecialTable,luaSpecialValue,luaOperator,luaSymbolOperator,luaEllipsis,luaComma,luaFunc,luaFuncCall,luaError,luaType
 syntax cluster luaStat
       \ contains=@luaExpr,luaIfThen,luaBlock,luaLoop,luaGoto,luaLabel,luaLocal,luaStatement,luaSemiCol,luaErrHand
 
@@ -38,7 +38,7 @@ syntax region luaBracket transparent matchgroup=luaBrackets start="\[" end="\]" 
 syntax match  luaComma ","
 syntax match  luaSemiCol ";"
 if !exists('g:lua_syntax_nosymboloperator')
-  syntax match luaSymbolOperator "[#<>=~^&|*/%+-]\|\.\."
+  syntax match luaSymbolOperator "[:#<>=~^&|*/%+-]\|\.\."
 endi
 syntax match  luaEllipsis "\.\.\."
 
@@ -68,8 +68,11 @@ syntax region luaFuncSig contained transparent start="\(\<function\>\)\@<=" end=
 syntax match luaFuncId contained "[^(]*(\@=" contains=luaFuncTable,luaFuncName
 syntax match luaFuncTable contained /\k\+\%(\s*[.:]\)\@=/
 syntax match luaFuncName contained "[^(.:]*(\@="
-syntax region luaFuncArgs contained transparent matchgroup=luaFuncParens start=/(/ end=/)/ contains=@luaBase,luaFuncArgName,luaFuncArgComma,luaEllipsis
+syntax region luaFuncArgs contained transparent matchgroup=luaFuncParens start=/(/ end=/)/ contains=@luaBase,luaFuncArgDefinition,luaFuncArgComma,luaEllipsis
+syntax match luaFuncArgDefinition contained contains=luaFuncArgName,luaFuncArgTypeColon,luaFuncArgTypeName
 syntax match luaFuncArgName contained /\k\+/
+syntax match luaFuncArgTypeColon contained /:\s*/
+syntax match luaFuncArgTypeName contained /\k\+/
 syntax match luaFuncArgComma contained /,/
 
 " if ... then
@@ -95,6 +98,10 @@ call s:FoldableRegion('control', 'luaBlock',
 call s:FoldableRegion('control', 'luaLoop',
       \ 'transparent matchgroup=luaRepeat start="\<repeat\>" end="\<until\>" contains=@luaStat nextgroup=@luaExpr')
 
+" record definitions
+call s:FoldableRegion('control', 'luaBlock',
+      \ 'transparent matchgroup=luaStatement start="\<record\>" end="\<end\>" contains=@luaExpr')
+
 " while ... do
 syntax region luaLoop transparent matchgroup=luaRepeat start="\<while\>" end="\<do\>"me=e-2 contains=@luaExpr nextgroup=luaLoopBlock skipwhite skipempty
 
@@ -111,8 +118,9 @@ syntax match luaLabel "::\k\+::"
 syntax keyword luaConstant nil true false
 syntax keyword luaBuiltIn _ENV self
 syntax keyword luaLocal local
-syntax keyword luaOperator and or not
+syntax keyword luaOperator and or not is
 syntax keyword luaStatement break return
+syntax keyword luaType string boolean any number
 
 " Strings
 syntax match  luaStringSpecial contained #\\[\\abfnrtvz'"]\|\\x[[:xdigit:]]\{2}\|\\[[:digit:]]\{,3}#
@@ -213,6 +221,7 @@ if version >= 508 || !exists("did_lua_syn_inits")
   HiLink luaError            Error
   HiLink luaFloat            Float
   HiLink luaFuncArgName      Noise
+  HiLink luaFuncArgTypeName  Type
   HiLink luaFuncCall         PreProc
   HiLink luaFuncId           Function
   HiLink luaFuncName         luaFuncId
@@ -237,7 +246,7 @@ if version >= 508 || !exists("did_lua_syn_inits")
   HiLink luaStringLong       luaString
   HiLink luaStringSpecial    SpecialChar
   HiLink luaErrHand          Exception
-
+  HiLink luaType 	     Type
   delcommand HiLink
 end
 
