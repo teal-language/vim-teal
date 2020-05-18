@@ -1,5 +1,6 @@
-" Author: Patrick Desaulniers https://github.com/pdesaulniers
-" Description: TL linter based on `tl check`
+" Description: Teal linter based on `tl check`
+
+" Based on https://github.com/dense-analysis/ale/blob/master/ale_linters/lua/luacheck.vim
 
 call ale#Set('tl_tlcheck_executable', 'tl')
 call ale#Set('tl_tlcheck_options', '')

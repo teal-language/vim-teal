@@ -1,6 +1,7 @@
-" TL syntax file
-" Language: Lua
-" URL: https://github.com/pdesaulniers/vim-tl
+" Teal syntax file
+" Language: Teal
+
+" Based on https://github.com/tbastos/vim-lua
 
 if !exists("main_syntax")
   if version < 600
@@ -68,11 +69,8 @@ syntax region luaFuncSig contained transparent start="\(\<function\>\)\@<=" end=
 syntax match luaFuncId contained "[^(]*(\@=" contains=luaFuncTable,luaFuncName
 syntax match luaFuncTable contained /\k\+\%(\s*[.:]\)\@=/
 syntax match luaFuncName contained "[^(.:]*(\@="
-syntax region luaFuncArgs contained transparent matchgroup=luaFuncParens start=/(/ end=/)/ contains=@luaBase,luaFuncArgDefinition,luaFuncArgComma,luaEllipsis
-syntax match luaFuncArgDefinition contained contains=luaFuncArgName,luaFuncArgTypeColon,luaFuncArgTypeName
+syntax region luaFuncArgs contained transparent matchgroup=luaFuncParens start=/(/ end=/)/ contains=@luaBase,luaFuncArgName,luaFuncArgComma,luaEllipsis
 syntax match luaFuncArgName contained /\k\+/
-syntax match luaFuncArgTypeColon contained /:\s*/
-syntax match luaFuncArgTypeName contained /\k\+/
 syntax match luaFuncArgComma contained /,/
 
 " if ... then
@@ -101,6 +99,10 @@ call s:FoldableRegion('control', 'luaLoop',
 " record definitions
 call s:FoldableRegion('control', 'luaBlock',
       \ 'transparent matchgroup=luaStatement start="\<record\>" end="\<end\>" contains=@luaExpr')
+
+" enum definitions
+call s:FoldableRegion('control', 'luaBlock',
+      \ 'transparent matchgroup=luaStatement start="\<enum\>" end="\<end\>" contains=@luaExpr')
 
 " while ... do
 syntax region luaLoop transparent matchgroup=luaRepeat start="\<while\>" end="\<do\>"me=e-2 contains=@luaExpr nextgroup=luaLoopBlock skipwhite skipempty
@@ -164,7 +166,7 @@ if !exists('g:lua_syntax_nostdlib')
           \ math
           \ os
           \ package
-          \ string
+"          \ string
           \ table
           \ utf8
 
@@ -239,6 +241,7 @@ if version >= 508 || !exists("did_lua_syn_inits")
   HiLink luaOperator         Operator
   HiLink luaRepeat           Repeat
   HiLink luaSemiCol          Delimiter
+  HiLink luaType             Type
   HiLink luaSpecialTable     Special
   HiLink luaSpecialValue     PreProc
   HiLink luaStatement        Statement
@@ -246,7 +249,6 @@ if version >= 508 || !exists("did_lua_syn_inits")
   HiLink luaStringLong       luaString
   HiLink luaStringSpecial    SpecialChar
   HiLink luaErrHand          Exception
-  HiLink luaType 	     Type
   delcommand HiLink
 end
 
