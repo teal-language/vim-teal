@@ -1,2 +1,2 @@
-# vim-tl
-Syntax highlighting for TL, a typed dialect of Lua.
+# vim-teal
+Syntax highlighting for Teal, a typed dialect of Lua.
