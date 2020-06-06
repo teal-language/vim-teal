@@ -2,15 +2,15 @@
 
 " Based on https://github.com/dense-analysis/ale/blob/master/ale_linters/lua/luacheck.vim
 
-call ale#Set('tl_tlcheck_executable', 'tl')
-call ale#Set('tl_tlcheck_options', '')
+call ale#Set('teal_tlcheck_executable', 'tl')
+call ale#Set('teal_tlcheck_options', '')
 
-function! ale_linters#tl#tlcheck#GetCommand(buffer) abort
-    return '%e' . ale#Pad(ale#Var(a:buffer, 'tl_tlcheck_options'))
+function! ale_linters#teal#tlcheck#GetCommand(buffer) abort
+    return '%e' . ale#Pad(ale#Var(a:buffer, 'teal_tlcheck_options'))
     \   . ' check %s'
 endfunction
 
-function! ale_linters#tl#tlcheck#Handle(buffer, lines) abort
+function! ale_linters#teal#tlcheck#Handle(buffer, lines) abort
     " Matches patterns line the following:
     "
     " artal.tl:159:17: shadowing definition of loop variable 'i' on line 106
@@ -30,10 +30,10 @@ function! ale_linters#tl#tlcheck#Handle(buffer, lines) abort
     return l:output
 endfunction
 
-call ale#linter#Define('tl', {
+call ale#linter#Define('teal', {
 \   'name': 'tlcheck',
-\   'executable': {b -> ale#Var(b, 'tl_tlcheck_executable')},
-\   'command': function('ale_linters#tl#tlcheck#GetCommand'),
-\   'callback': 'ale_linters#tl#tlcheck#Handle',
+\   'executable': {b -> ale#Var(b, 'teal_tlcheck_executable')},
+\   'command': function('ale_linters#teal#tlcheck#GetCommand'),
+\   'callback': 'ale_linters#teal#tlcheck#Handle',
 \   'output_stream': 'both'
 \})
