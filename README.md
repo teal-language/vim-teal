@@ -6,4 +6,4 @@ Using [vim-plug](https://github.com/junegunn/vim-plug):
 ```
 Plug 'teal-language/vim-teal'
 ```
-For linter support, you also need to install [ALE](https://github.com/dense-analysis/ale). Also, you have to make sure that [`tl` is installed and available in the PATH.](https://github.com/teal-language/tl#installing)
+For linter and `:compiler` support, you also need to install [ALE](https://github.com/dense-analysis/ale). Also, you have to make sure that [`tl` is installed and available in the PATH.](https://github.com/teal-language/tl#installing)
