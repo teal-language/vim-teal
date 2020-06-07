@@ -14,7 +14,7 @@ elseif exists("g:teal_check_before_gen")
 else
 	CompilerSet makeprg=tl\ gen\ %
 endif
-CompilerSet errorformat=%f:%l:%c:%m
+CompilerSet errorformat=%f:%l:%c:\ %m
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
