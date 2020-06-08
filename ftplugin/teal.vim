@@ -7,7 +7,7 @@ let s:cpo_save = &cpo
 
 setlocal comments=s:--[[,mb:-,ex:]],:--,f:#,:--
 setlocal commentstring=--%s
-setlocal makeprg=tl\ gen\ %
+
 if exists("loaded_matchit")
 	let b:match_ignorecase = 0
 	let b:match_words=
