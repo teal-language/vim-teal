@@ -158,7 +158,7 @@ syn match tealFunctionName /\K\k*\(\.\K\k*\)*\(:\K\k*\)\?/ contained
 	\ skipwhite skipempty skipnl
 syn region tealFunctionGeneric contained transparent
 	\ start=/</ end=/>/
-	\ contains=tealBasicType
+	\ contains=tealGeneric
 	\ nextgroup=tealFunctionArgs
 	\ skipwhite skipempty skipnl
 syn region tealFunctionArgs contained transparent
