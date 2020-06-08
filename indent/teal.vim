@@ -1,8 +1,10 @@
 " Vim indent file
 " Language: Teal
+" Options: teal_no_multi_indent
 
 " Adapted from https://github.com/tbastos/vim-lua
 
+" {{{ setup
 if exists("b:did_indent")
 	finish
 endif
@@ -17,7 +19,7 @@ setlocal indentkeys+=0=end,0=until
 if exists("*GetTealIndent")
 	finish
 endif
-
+" }}}
 " {{{ Patterns
 let s:open_patt = '\C\%(\<\%(function\|record\|enum\|if\|repeat\|do\)\>\|(\|{\)'
 let s:middle_patt = '\C\<\%(else\|elseif\)\>'
@@ -28,7 +30,7 @@ let s:anon_func_end = '\<end\%(\s*[)}]\)\+'
 
 let s:skip_expr = "synIDattr(synID(line('.'),col('.'),1),'name') =~# 'tealBasicType\\|tealFunctionType\\|tealFunctionTypeArgs\\|tealParenTypes\\|tealTableType\\|tealFunctionArgs\\|tealComment\\|tealString'"
 " }}}
-
+" {{{ Helpers
 function s:IsInCommentOrString(line_num, column)
 	return synIDattr(synID(a:line_num, a:column, 1), 'name') =~# 'tealLongComment\|tealLongString'
 		\ && !(getline(a:line_number) =~# '^\s*\%(--\)\?\[=*\[')
@@ -47,7 +49,7 @@ function s:GetLineContent(line_number)
 	" strip trailing comments
 	return substitute(getline(a:line_number), '\v\m--.*$', '', '')
 endfunction
-
+" }}}
 
 function GetTealIndent()
 	if s:IsInCommentOrString(v:lnum, 1)
@@ -104,5 +106,12 @@ function GetTealIndent()
 	" restore cursor
 	call setpos(".", cur_pos)
 
+	if exists("g:teal_no_multi_indent")
+		if i > 1
+			let i = 1
+		elseif i < -1
+			let i = -1
+		endif
+	endif
 	return indent(prev_line) + (shiftwidth() * i)
 endfunction
