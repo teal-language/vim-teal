@@ -23,6 +23,10 @@ syn cluster tealStatement contains=
 	\ tealGoto,tealLabel,tealBreak,tealReturn,
 	\ tealLocal,tealGlobal
 
+syn cluster tealLiteral contains=
+	\ tealString,tealLongString,tealNumber,tealConstant
+syn match tealIdentifier /\K\k*/
+
 " {{{ ), ], end, etc error
 syntax match tealError "\()\|}\|\]\)"
 syntax match tealError "\<\%(end\|else\|elseif\|then\|until\|in\)\>"
@@ -190,7 +194,25 @@ syn region tealRecordGeneric contained transparent
 	\ matchgroup=tealParens
 	\ start=/\(\<record\>\)\@<=\s*</ end=/>/
 	\ contains=tealGeneric
-	\ nextgroup=tealRecordItem
+syn keyword tealRecordTag tag
+	\ contained containedin=tealRecordBlock
+syn keyword tealRecordTagIs is
+	\ contained containedin=tealRecordBlock
+	\ nextgroup=tealRecordTagType
+	\ skipwhite skipnl skipempty
+syn match tealRecordTagType /\K\k*\(\.\K\k*\)*/
+	\ contained containedin=tealRecordBlock
+	\ nextgroup=tealRecordWith
+	\ skipwhite skipnl skipempty
+syn keyword tealRecordTagWith with
+	\ contained containedin=tealRecordBlock
+	\ nextgroup=tealRecordTagName
+	\ skipwhite skipnl skipempty
+syn match tealRecordTagName /\K\k*/ contained
+	\ nextgroup=tealRecordTagAssign
+	\ skipwhite skipnl skipempty
+syn match tealRecordTagAssign /=/ contained
+	\ nextgroup=@tealLiteral
 	\ skipwhite skipnl skipempty
 syn match tealRecordItem /\K\k*/ contained
 	\ nextgroup=tealTypeAnnotation,tealRecordAssign
@@ -198,7 +220,6 @@ syn match tealRecordItem /\K\k*/ contained
 syn match tealRecordAssign /=/ contained
 	\ nextgroup=@tealNewType
 	\ skipwhite skipnl skipempty
-hi def link tealRecordAssign tealOperator
 " }}}
 " {{{ enum ... end
 syn region tealEnumBlock
@@ -434,6 +455,12 @@ hi def link tealOperator              Operator
 hi def link tealBuiltin               Identifier
 hi def link tealError                 Error
 hi def link tealGeneric               Type
+hi def link tealRecordTagType         Type
+hi def link tealRecordTag             Keyword
+hi def link tealRecordAssign          tealOperator
+hi def link tealRecordTagAssign       tealOperator
+hi def link tealRecordTagIs           tealOperator
+hi def link tealRecordTagWith         tealOperator
 " }}}
 
 let b:current_syntax = "teal"
