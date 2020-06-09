@@ -115,28 +115,30 @@ function GetTealIndent()
 		else
 			let i = 1
 		end
-	elseif prev_contents =~# s:ends_with_bin_op
-		let prev_prev_line = s:PrevLineOfCode(prev_line - 1)
-		let prev_prev_contents = s:GetLineContent(prev_prev_line)
-		if prev_prev_contents =~# s:ends_with_bin_op
-			let i = 0
-		else
-			let i = 1
-		endif
+	" elseif prev_contents =~# s:ends_with_bin_op
+	" 	let prev_prev_line = s:PrevLineOfCode(prev_line - 1)
+	" 	let prev_prev_contents = s:GetLineContent(prev_prev_line)
+	" 	if prev_prev_contents =~# s:ends_with_bin_op
+	" 		let i = 0
+	" 	else
+	" 		let i = 1
+	" 	endif
 	elseif prev_contents =~# s:starts_with_bin_op 
 		if current_contents !~# s:starts_with_bin_op
 			let i = -1
 		else
 			let i = 0
 		endif
-	elseif prev_contents !~# s:ends_with_bin_op
-		let prev_prev_line = s:PrevLineOfCode(prev_line - 1)
-		let prev_prev_contents = s:GetLineContent(prev_prev_line)
-		if prev_prev_contents =~# s:ends_with_bin_op
-			let i = -1
-		else
-			let i = 0
-		endif
+	" elseif prev_contents !~# s:ends_with_bin_op
+	" 	let prev_prev_line = s:PrevLineOfCode(prev_line - 1)
+	" 	let prev_prev_contents = s:GetLineContent(prev_prev_line)
+	" 	echoerr "prev_prev_contents: " . prev_prev_contents
+	" 	echoerr "prev_prev =~# ends_with_bin_op: " . (prev_prev_contents =~# s:ends_with_bin_op)
+	" 	if prev_prev_contents =~# s:ends_with_bin_op
+	" 		let i = -1
+	" 	else
+	" 		let i = 0
+	" 	endif
 	endif
 
 	" restore cursor
