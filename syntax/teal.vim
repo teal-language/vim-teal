@@ -16,7 +16,7 @@ syn cluster tealExpression contains=
 	\ @tealBase,tealParen,tealBuiltin,tealBracket,tealBrace,
 	\ tealOperator,tealFunctionBlock,tealFunctionCall,tealError,
 	\ tealTableConstructor,tealRecordBlock,tealEnumBlock,tealSelf,
-	\ tealColon,tealVarargs
+	\ tealVarargs
 syn cluster tealStatement contains=
 	\ @tealExpression,tealIfThen,tealThenEnd,tealBlock,tealLoop,
 	\ tealRepeatBlock,tealWhileDo,tealForDo,
@@ -149,7 +149,7 @@ syn region tealBracket transparent
 syn region tealFunctionBlock transparent
 	\ matchgroup=tealKeyword
 	\ start=/\<function\>/ end=/\<end\>/
-	\ contains=@tealStatement,tealFunctionSignature
+	\ contains=@tealStatement,tealFunctionSignature,tealTypeAnnotation
 syn region tealFunctionSignature contained transparent
 	\ start=/\(\<function\>\)\@<=/ end=/)/ keepend
 	\ contains=tealFunctionName,tealFunctionGeneric,tealFunctionArgs
@@ -247,8 +247,7 @@ syn region tealRepeatBlock
 syn region tealTableConstructor
 	\ matchgroup=tealTable
 	\ start=/{/ end=/}/
-	\ contains=@tealExpression,tealTypeAnnotation
-
+	\ contains=tealTypeAnnotation,@tealExpression
 " }}}
 " {{{ Goto
 syn keyword tealGoto goto
