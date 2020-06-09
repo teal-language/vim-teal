@@ -31,8 +31,8 @@ let s:anon_func_end = '\<end\%(\s*[)}]\)\+'
 let s:skip_expr = "synIDattr(synID(line('.'),col('.'),1),'name') =~# 'tealBasicType\\|tealFunctionType\\|tealFunctionTypeArgs\\|tealParenTypes\\|tealTableType\\|tealFunctionArgs\\|tealComment\\|tealString'"
 
 " Look, don't ask why, but \s doesnt work here
-let s:bin_op = "\([\V<>=~^&|\*/\%+-\.:]\|\.\.\)"
-let s:starts_with_bin_op = "^[\t ]*" . s:bin_op
+let s:bin_op = "[\V<>=~^&|*/\%+-.:]"
+let s:starts_with_bin_op = "^[\t ]*" . s:bin_op 
 let s:ends_with_bin_op = s:bin_op . "[\t ]*$"
 " }}}
 " {{{ Helpers
@@ -122,6 +122,14 @@ function GetTealIndent()
 			let i = 0
 		endif
 	endif
+
+	echoerr "previous line: " . prev_contents
+	echoerr "current line: " . current_contents
+	echoerr "prev =~# s:starts_with_bin_op: " . (prev_contents =~# s:starts_with_bin_op)
+	echoerr "curr =~# s:starts_with_bin_op: " . (current_contents =~# s:starts_with_bin_op)
+	echoerr "prev =~# s:ends_with_bin_op: " . (prev_contents =~# s:ends_with_bin_op)
+	echoerr "curr =~# s:ends_with_bin_op: " . (current_contents =~# s:ends_with_bin_op)
+	breakadd here
 
 	" restore cursor
 	call setpos(".", cur_pos)
