@@ -81,6 +81,9 @@ syn cluster tealType contains=
 syn match tealTypeAnnotation /:/ contained
 	\ nextgroup=@tealType
 	\ skipwhite skipempty skipnl
+
+syn cluster tealNewType contains=
+	\ tealRecordBlock,tealEnumBlock,tealNominalFuncType
 " }}}
 " {{{ Function call
 syn match tealColon /:/
@@ -193,7 +196,7 @@ syn match tealRecordItem /\K\k*/ contained
 	\ nextgroup=tealTypeAnnotation,tealRecordAssign
 	\ skipwhite skipnl skipempty
 syn match tealRecordAssign /=/ contained
-	\ nextgroup=tealRecordBlock,tealEnumBlock
+	\ nextgroup=@tealNewType
 	\ skipwhite skipnl skipempty
 hi def link tealRecordAssign tealOperator
 " }}}
