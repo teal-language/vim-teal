@@ -3,6 +3,17 @@
 " Options: teal_no_multi_indent
 
 " Adapted from https://github.com/tbastos/vim-lua
+" TODO: Double indent dangling type annotations
+" 	!!! For Functions only !!!
+" 	this may be personal preference but this looks normal
+" 	local x
+" 		: number = 5
+" 	local function y()
+" 			: number
+" 		--[[ ... ]]
+" 	end
+"
+" 	something something synIDattr
 
 " {{{ setup
 if exists("b:did_indent")
@@ -120,6 +131,12 @@ function GetTealIndent()
 	breakadd here
 
 	if current_contents =~# s:starts_with_bin_op
+		" If the operator is a colon, check if its a type annotation
+		if current_contents =~# "^[\t ]*:"
+			" check if the previous line ends with a function decl
+			" if prev_contents
+			 " ="synIDattr(synID(line('.'),col('.'),1),'name') =~# 'tealTypeAnnotation'"
+		endif
 		if prev_contents =~# s:starts_with_bin_op
 			let i = 0
 		else
