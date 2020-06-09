@@ -29,11 +29,16 @@ let s:anon_func_start = '\S\+\s*[({].*\<function\s*(.*)\s*$'
 let s:anon_func_end = '\<end\%(\s*[)}]\)\+'
 
 let s:skip_expr = "synIDattr(synID(line('.'),col('.'),1),'name') =~# 'tealBasicType\\|tealFunctionType\\|tealFunctionTypeArgs\\|tealParenTypes\\|tealTableType\\|tealFunctionArgs\\|tealComment\\|tealString'"
+
+" Look, don't ask why, but \s doesnt work here
+let s:bin_op = "[\V<>=~^&|\*/\%+-\.:\(\.\.\)]"
+let s:starts_with_bin_op = "^[\t ]*" . s:bin_op
+let s:ends_with_bin_op = s:bin_op . "[\t ]*$"
 " }}}
 " {{{ Helpers
 function s:IsInCommentOrString(line_num, column)
 	return synIDattr(synID(a:line_num, a:column, 1), 'name') =~# 'tealLongComment\|tealLongString'
-		\ && !(getline(a:line_number) =~# '^\s*\%(--\)\?\[=*\[')
+				\ && !(getline(a:line_number) =~# '^\s*\%(--\)\?\[=*\[')
 endfunction
 
 function s:PrevLineOfCode(line_num)
@@ -50,7 +55,7 @@ function s:GetLineContent(line_number)
 	return substitute(getline(a:line_number), '\v\m--.*$', '', '')
 endfunction
 " }}}
-
+" {{{ The Indent function
 function GetTealIndent()
 	if s:IsInCommentOrString(v:lnum, 1)
 		return -1
@@ -59,20 +64,21 @@ function GetTealIndent()
 	if prev_line == 0
 		return 0
 	endif
-	
+
 	let current_contents = s:GetLineContent(v:lnum)
 	let prev_contents = s:GetLineContent(prev_line)
 	let cur_pos = getpos(".")
 
+
 	" count opens
 	call cursor(v:lnum, 1)
 	let num_prev_opens = searchpair(s:open_patt, s:middle_patt, s:close_patt,
-		\ 'mrb', s:skip_expr, prev_line)
+				\ 'mrb', s:skip_expr, prev_line)
 
 	" count closes
 	call cursor(prev_line, col([prev_line,'$']))
 	let num_closes = searchpair(s:open_patt, s:middle_patt, s:close_patt,
-		\ 'mr', s:skip_expr, v:lnum)
+				\ 'mr', s:skip_expr, v:lnum)
 
 	let i = num_prev_opens - num_closes
 
@@ -80,7 +86,7 @@ function GetTealIndent()
 	" excluding anonymous functions
 	call cursor(prev_line - 1, col([prev_line - 1, '$']))
 	let num_prev_closed_parens = searchpair('(', '', ')', 'mr',
-		\ s:skip_expr, prev_line)
+				\ s:skip_expr, prev_line)
 	if num_prev_closed_parens > 0 && prev_contents !~# s:anon_func_end
 		let i -= 1
 	endif
@@ -89,18 +95,58 @@ function GetTealIndent()
 	" excluding anonymous functions
 	call cursor(prev_line, col([prev_line, '$']))
 	let num_current_closed_parens = searchpair('(', '', ')', 'mr',
-		\ s:skip_expr, v:lnum)
+				\ s:skip_expr, v:lnum)
 	if num_current_closed_parens > 0 && current_contents !~# s:anon_func_end
 		let i += 1
 	endif
 
 	" special case for ({function()
-	if i > 1 && contents_prev =~# s:anon_func_start
+	if i > 1 && prev_contents =~# s:anon_func_start
 		let i = 1
 	endif
 	" special case for end})
-	if i < -1 && contents_cur =~# s:anon_func_end
+	if i < -1 && current_contents =~# s:anon_func_end
 		let i = -1
+	endif
+
+	" if current line starts with operator or previous line ends with
+	" operator, outdent
+	echoerr "previous line: " . prev_contents
+	echoerr "current line: " . current_contents
+	echoerr "prev =~# s:starts_with_bin_op: " . (prev_contents =~# s:starts_with_bin_op)
+	echoerr "curr =~# s:starts_with_bin_op: " . (current_contents =~# s:starts_with_bin_op)
+	echoerr "prev =~# s:ends_with_bin_op: " . (prev_contents =~# s:ends_with_bin_op)
+	echoerr "curr =~# s:ends_with_bin_op: " . (current_contents =~# s:ends_with_bin_op)
+	breakadd here
+
+	if current_contents =~# s:starts_with_bin_op
+		if prev_contents =~# s:starts_with_bin_op
+			let i = 0
+		else
+			let i = 1
+		end
+	elseif prev_contents =~# s:ends_with_bin_op
+		let prev_prev_line = s:PrevLineOfCode(prev_line - 1)
+		let prev_prev_contents = s:GetLineContent(prev_prev_line)
+		if prev_prev_contents =~# s:ends_with_bin_op
+			let i = 0
+		else
+			let i = 1
+		endif
+	elseif prev_contents !~# s:ends_with_bin_op
+		let prev_prev_line = s:PrevLineOfCode(prev_line - 1)
+		let prev_prev_contents = s:GetLineContent(prev_prev_line)
+		if prev_prev_contents =~# s:ends_with_bin_op
+			let i = -1
+		else
+			let i = 0
+		endif
+	elseif prev_contents =~# s:starts_with_bin_op 
+		if current_contents !~# s:starts_with_bin_op
+			let i = -1
+		else
+			let i = 0
+		endif
 	endif
 
 	" restore cursor
@@ -115,3 +161,4 @@ function GetTealIndent()
 	endif
 	return indent(prev_line) + (shiftwidth() * i)
 endfunction
+" }}}
