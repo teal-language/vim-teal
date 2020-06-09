@@ -3,17 +3,6 @@
 " Options: teal_no_multi_indent
 
 " Adapted from https://github.com/tbastos/vim-lua
-" TODO: Double indent dangling type annotations
-" 	!!! For Functions only !!!
-" 	this may be personal preference but this looks normal
-" 	local x
-" 		: number = 5
-" 	local function y()
-" 			: number
-" 		--[[ ... ]]
-" 	end
-"
-" 	something something synIDattr
 
 " {{{ setup
 if exists("b:did_indent")
@@ -120,23 +109,7 @@ function GetTealIndent()
 		let i = -1
 	endif
 
-	" if current line starts with operator or previous line ends with
-	" operator, outdent
-	echoerr "previous line: " . prev_contents
-	echoerr "current line: " . current_contents
-	echoerr "prev =~# s:starts_with_bin_op: " . (prev_contents =~# s:starts_with_bin_op)
-	echoerr "curr =~# s:starts_with_bin_op: " . (current_contents =~# s:starts_with_bin_op)
-	echoerr "prev =~# s:ends_with_bin_op: " . (prev_contents =~# s:ends_with_bin_op)
-	echoerr "curr =~# s:ends_with_bin_op: " . (current_contents =~# s:ends_with_bin_op)
-	breakadd here
-
 	if current_contents =~# s:starts_with_bin_op
-		" If the operator is a colon, check if its a type annotation
-		if current_contents =~# "^[\t ]*:"
-			" check if the previous line ends with a function decl
-			" if prev_contents
-			 " ="synIDattr(synID(line('.'),col('.'),1),'name') =~# 'tealTypeAnnotation'"
-		endif
 		if prev_contents =~# s:starts_with_bin_op
 			let i = 0
 		else
@@ -150,16 +123,16 @@ function GetTealIndent()
 		else
 			let i = 1
 		endif
-	elseif prev_contents !~# s:ends_with_bin_op
-		let prev_prev_line = s:PrevLineOfCode(prev_line - 1)
-		let prev_prev_contents = s:GetLineContent(prev_prev_line)
-		if prev_prev_contents =~# s:ends_with_bin_op
+	elseif prev_contents =~# s:starts_with_bin_op 
+		if current_contents !~# s:starts_with_bin_op
 			let i = -1
 		else
 			let i = 0
 		endif
-	elseif prev_contents =~# s:starts_with_bin_op 
-		if current_contents !~# s:starts_with_bin_op
+	elseif prev_contents !~# s:ends_with_bin_op
+		let prev_prev_line = s:PrevLineOfCode(prev_line - 1)
+		let prev_prev_contents = s:GetLineContent(prev_prev_line)
+		if prev_prev_contents =~# s:ends_with_bin_op
 			let i = -1
 		else
 			let i = 0
