@@ -31,7 +31,7 @@ let s:anon_func_end = '\<end\%(\s*[)}]\)\+'
 let s:skip_expr = "synIDattr(synID(line('.'),col('.'),1),'name') =~# 'tealBasicType\\|tealFunctionType\\|tealFunctionTypeArgs\\|tealParenTypes\\|tealTableType\\|tealFunctionArgs\\|tealComment\\|tealString'"
 
 " Look, don't ask why, but \s doesnt work here
-let s:bin_op = "[\V<>=~^&|\*/\%+-\.:\(\.\.\)]"
+let s:bin_op = "\([\V<>=~^&|\*/\%+-\.:]\|\.\.\)"
 let s:starts_with_bin_op = "^[\t ]*" . s:bin_op
 let s:ends_with_bin_op = s:bin_op . "[\t ]*$"
 " }}}
@@ -115,30 +115,12 @@ function GetTealIndent()
 		else
 			let i = 1
 		end
-	" elseif prev_contents =~# s:ends_with_bin_op
-	" 	let prev_prev_line = s:PrevLineOfCode(prev_line - 1)
-	" 	let prev_prev_contents = s:GetLineContent(prev_prev_line)
-	" 	if prev_prev_contents =~# s:ends_with_bin_op
-	" 		let i = 0
-	" 	else
-	" 		let i = 1
-	" 	endif
 	elseif prev_contents =~# s:starts_with_bin_op 
 		if current_contents !~# s:starts_with_bin_op
 			let i = -1
 		else
 			let i = 0
 		endif
-	" elseif prev_contents !~# s:ends_with_bin_op
-	" 	let prev_prev_line = s:PrevLineOfCode(prev_line - 1)
-	" 	let prev_prev_contents = s:GetLineContent(prev_prev_line)
-	" 	echoerr "prev_prev_contents: " . prev_prev_contents
-	" 	echoerr "prev_prev =~# ends_with_bin_op: " . (prev_prev_contents =~# s:ends_with_bin_op)
-	" 	if prev_prev_contents =~# s:ends_with_bin_op
-	" 		let i = -1
-	" 	else
-	" 		let i = 0
-	" 	endif
 	endif
 
 	" restore cursor
