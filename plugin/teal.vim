@@ -14,6 +14,14 @@ function s:LoadPlugins()
 		let b:endwise_pattern = '\zs\%(\<function\>\)\%(.*\<end\>\)\@!\|\<\%(then\|do\|record\|enum\)\ze\s*$'
 		let b:endwise_syngroups = 'tealFunction,tealDoEnd,tealIfStatement,tealRecord,tealEnum'
 	endif
+
+	if g:colors_name == "dracula"
+		hi! link tealTable           DraculaFg
+		hi! link tealFunctionArgName DraculaOrangeItalic
+		hi! link tealSelf            DraculaPurpleItalic
+		hi! link tealBuiltin         DraculaCyan
+		hi! link tealGeneric         DraculaOrangeItalic
+	endif
 endfunction
 
 autocmd FileType teal call s:LoadPlugins()
