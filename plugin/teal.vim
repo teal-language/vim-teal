@@ -15,7 +15,7 @@ function s:LoadPlugins()
 		let b:endwise_syngroups = 'tealFunction,tealDoEnd,tealIfStatement,tealRecord,tealEnum'
 	endif
 
-	if g:colors_name == "dracula"
+	if exists("g:colors_name") && g:colors_name == "dracula"
 		hi! link tealTable           DraculaFg
 		hi! link tealFunctionArgName DraculaOrangeItalic
 		hi! link tealSelf            DraculaPurpleItalic
