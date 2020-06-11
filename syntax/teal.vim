@@ -150,7 +150,7 @@ syn region tealBracket transparent
 " }}}
 " {{{ function ... end
 syn region tealFunctionBlock transparent
-	\ matchgroup=tealKeyword
+	\ matchgroup=tealFunction
 	\ start=/\<function\>/ end=/\<end\>/
 	\ contains=@tealStatement,tealFunctionSignature
 syn region tealFunctionSignature contained transparent
@@ -398,6 +398,7 @@ syn match tealBuiltIn /\<utf8\.offset\>/
 " }}}
 " {{{ Highlight
 hi def link tealKeyword               Keyword
+hi def link tealFunction              Keyword
 hi def link tealFunctionName          Function
 hi def link tealFunctionArgName       Identifier
 hi def link tealLocal                 Keyword
