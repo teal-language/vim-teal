@@ -39,7 +39,7 @@ let s:ignore_patt = 'tealString'
 	\ . '\|tealTypeAnnotation'
 	\ . '\|tealVarName'
 
-let s:bin_op = "[\V<>=~^&|*/\%+-.:]"
+let s:bin_op = "[<>=~^&|*/\%+-.:]"
 let s:starts_with_bin_op = "^[\t ]*" . s:bin_op 
 let s:ends_with_bin_op = s:bin_op . "[\t ]*$"
 " }}}
