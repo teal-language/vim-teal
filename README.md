@@ -24,3 +24,7 @@ You should also make sure that the Teal compiler [is available in your PATH:](ht
 ```
 luarocks install tl
 ```
+
+## Contributors
+
+Contributions are greatly appreciated! Feel free to fork [this repository](https://github.com/teal-language/vim-teal) and open a pull request on GitHub.
