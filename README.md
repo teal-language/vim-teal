@@ -1,11 +1,26 @@
 # vim-teal
-Syntax highlighting and linter for Teal, a typed dialect of Lua.
+This plugin provides [Teal](https://github.com/teal-language/tl) language support for Vim.
+
+## Features
+
+- Syntax highlighting
+- Automatic indentation
+- Linting (requires [ALE](https://github.com/dense-analysis/ale))
+- Automatic insertion of `end` tokens (requires [vim-endwise](https://github.com/tpope/vim-endwise))
+- `:compiler` support
 
 ## Install
 Using [vim-plug](https://github.com/junegunn/vim-plug):
-```
+```vim
+" Teal language support
 Plug 'teal-language/vim-teal'
+
+" Optional dependencies; will be loaded on-demand when editing Teal files
+Plug 'dense-analysis/ale', { 'for': 'teal' }
+Plug 'tpope/vim-endwise', { 'for': 'teal' }
 ```
 
-For `:compiler` support, make sure you have [`tl` in your PATH](https://github.com/teal-language/tl#installing).
-For linter and support, you also need to install [ALE](https://github.com/dense-analysis/ale) and have [`tl` in your PATH](https://github.com/teal-language/tl#installing).
+You should also make sure that the Teal compiler [is available in your PATH:](https://github.com/teal-language/tl#installing)
+```
+luarocks install tl
+```
