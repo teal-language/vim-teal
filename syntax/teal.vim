@@ -16,12 +16,12 @@ syn cluster tealExpression contains=
 	\ @tealBase,tealParen,tealBuiltin,tealBracket,tealBrace,
 	\ tealOperator,tealFunctionBlock,tealFunctionCall,tealError,
 	\ tealTableConstructor,tealRecordBlock,tealEnumBlock,tealSelf,
-	\ tealColon,tealVarargs
+	\ tealVarargs
 syn cluster tealStatement contains=
 	\ @tealExpression,tealIfThen,tealThenEnd,tealBlock,tealLoop,
 	\ tealRepeatBlock,tealWhileDo,tealForDo,
 	\ tealGoto,tealLabel,tealBreak,tealReturn,
-	\ tealLocal,tealGlobal
+	\ tealColon,tealLocal,tealGlobal
 
 " {{{ ), ], end, etc error
 syntax match tealError "\()\|}\|\]\)"
