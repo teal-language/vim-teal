@@ -1,6 +1,6 @@
 
 function s:LoadPlugins()
-	if exists("loaded_matchit")
+	if exists("g:loaded_matchit")
 		let b:match_ignorecase = 0
 		let b:match_words=
 			\ '\<\%(do\|enum\|record\|function\|if\)\>:' .
@@ -8,7 +8,7 @@ function s:LoadPlugins()
 			\ '\<end\>,' .
 			\ '\<repeat\>:\<until\>'
 	endif
-	if exists("loaded_endwise")
+	if exists("g:loaded_endwise")
 		let b:endwise_addition = 'end'
 		let b:endwise_words = 'function,do,then,enum,record'
 		let b:endwise_pattern = '\zs\%(\<function\>\)\%(.*\<end\>\)\@!\|\<\%(then\|do\|record\|enum\)\ze\s*$'
