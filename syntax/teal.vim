@@ -83,7 +83,7 @@ syn match tealTypeAnnotation /:/ contained
 	\ skipwhite skipempty skipnl
 
 syn cluster tealNewType contains=
-	\ tealRecordBlock,tealEnumBlock,tealNominalFuncType
+	\ tealRecordBlock,tealEnumBlock,tealTypeAlias
 " }}}
 " {{{ Function call
 syn match tealColon /:/
@@ -108,9 +108,17 @@ syn keyword tealComment contained TODO FIXME XXX
 syn region tealLongComment start=/--\[\z(=*\)\[/ end=/\]\z1\]/
 
 " }}}
-" {{{ functiontype
-syn keyword tealNominalFuncType functiontype
-	\ nextgroup=tealFunctionGenericType,tealFunctionTypeArgs
+" {{{ typealias
+syn region tealTypeAliasParens contained matchgroup=tealParens
+	\ start=/(/ end=/)/
+	\ contains=@tealType
+syn region tealTypeAliasGeneric contained matchgroup=tealParens
+	\ start=/</ end=/>/
+	\ contains=tealGeneric
+	\ nextgroup=tealTypeAliasParens
+	\ skipempty skipnl skipwhite
+syn keyword tealTypeAlias typealias
+	\ nextgroup=tealTypeAliasGeneric,tealTypeAliasParens
 	\ skipempty skipnl skipwhite
 " }}}
 " {{{ local ... <const>, global ... <const>, break, return, self
@@ -410,7 +418,7 @@ hi def link tealSelf                  Special
 hi def link tealTable                 Structure
 hi def link tealBasicType             Type
 hi def link tealFunctionType          Type
-hi def link tealNominalFuncType       Keyword
+hi def link tealTypeAlias             Keyword
 hi def link tealAttribute             StorageClass
 hi def link tealParens                Identifier
 hi def link tealRecord                Keyword
