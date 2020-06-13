@@ -89,7 +89,7 @@ syn cluster tealNewType contains=
 syn match tealColon /:/
 	\ nextgroup=@tealType,tealFunctionCall
 	\ skipwhite skipempty skipnl
-syn match tealFunctionCall /\(:\?\)\@=\K\k*\s*\n*\s*\("\|'\|(\|{\|\[=*\[\)\@=/
+syn match tealFunctionCall /\(:\?\)\@1<=\zs\K\k*\ze\s*\n*\s*\(["'({]\|\[=*\[\)/
 " }}}
 " {{{ Operators
 " Symbols
@@ -174,7 +174,7 @@ syn match tealFunctionArgName contained /\K\k*/
 	\ nextgroup=tealFunctionArgTypeAnnotation,tealFunctionArgComma
 	\ skipwhite skipempty skipnl
 syn region tealFunctionArgTypeAnnotation contained transparent
-	\ start=/:/ end=/\(,\|)\)\@=/ skip=/:/
+	\ start=/:/ end=/\(,\|)\)\@1<=/ skip=/:/
 	\ contains=@tealType
 	\ nextgroup=tealFunctionArgName
 	\ skipwhite skipempty skipnl
@@ -188,10 +188,8 @@ syn region tealRecordBlock
 	\ tealComment,tealLongComment
 syn region tealRecordGeneric contained transparent
 	\ matchgroup=tealParens
-	\ start=/\(\<record\>\)\@<=\s*</ end=/>/
+	\ start=/\(\<record\>\)\@6<=\s*</ end=/>/
 	\ contains=tealGeneric
-	\ nextgroup=tealRecordItem
-	\ skipwhite skipnl skipempty
 syn match tealRecordItem /\K\k*/ contained
 	\ nextgroup=tealTypeAnnotation,tealRecordAssign
 	\ skipwhite skipnl skipempty
