@@ -8,11 +8,11 @@ let s:cpo_save = &cpo
 set cpo&vim
 
 if exists("g:teal_check_only")
-	CompilerSet makeprg=tl\ check\ %
+	CompilerSet makeprg=tl\ -q\ check\ %
 elseif exists("g:teal_check_before_gen")
-	CompilerSet makeprg=tl\ check\ %\ &&\ tl\ gen\ %
+	CompilerSet makeprg=tl\ -q\ check\ %\ &&\ tl\ -q\ gen\ %
 else
-	CompilerSet makeprg=tl\ gen\ %
+	CompilerSet makeprg=tl\ -q\ gen\ %
 endif
 CompilerSet errorformat=%f:%l:%c:\ %m
 
