@@ -104,7 +104,7 @@ syn match tealVarargs /\.\.\./
 " {{{ Comments
 syn match tealComment "\%^#!.*$"
 syn match tealComment /--.*$/ contains=tealTodo,@Spell
-syn keyword tealComment contained TODO FIXME XXX
+syn keyword tealTodo contained TODO FIXME XXX
 syn region tealLongComment start=/--\[\z(=*\)\[/ end=/\]\z1\]/
 
 " }}}
@@ -433,6 +433,7 @@ hi def link tealOperator              Operator
 hi def link tealBuiltin               Identifier
 hi def link tealError                 Error
 hi def link tealGeneric               Type
+hi def link tealTodo                  Todo
 " }}}
 
 let b:current_syntax = "teal"
