@@ -1,4 +1,5 @@
 
+
 if exists("b:current_syntax")
 	finish
 endif
@@ -21,75 +22,128 @@ syn cluster tealStatement contains=
 	\ @tealExpression,tealIfThen,tealThenEnd,tealBlock,tealLoop,
 	\ tealRepeatBlock,tealWhileDo,tealForDo,
 	\ tealGoto,tealLabel,tealBreak,tealReturn,
-	\ tealColon,tealLocal,tealGlobal
+	\ tealLocal,tealGlobal
 
 " {{{ ), ], end, etc error
 syntax match tealError "\()\|}\|\]\)"
 syntax match tealError "\<\%(end\|else\|elseif\|then\|until\|in\)\>"
 " }}}
+" {{{ Table Constructor
+syn region tealTableConstructor
+	\ matchgroup=tealTable
+	\ start=/{/ end=/}/
+	\ contains=@tealExpression,tealTypeAnnotation
+
+" }}}
 " {{{ Types
-syn match tealTypeComma /,/ contained
-	\ nextgroup=@tealType
-	\ skipwhite skipempty skipnl
-syn match tealUnion /|/ contained
-	\ nextgroup=@tealType
-	\ skipwhite skipempty skipnl
-syn match tealBasicType /\K\k*\(\.\K\k*\)*/ contained
-	\ nextgroup=tealGenericType,tealUnion,tealTypeComma
-	\ skipwhite skipempty skipnl
-syn match tealFunctionType /\<function\>/ contained
-	\ nextgroup=tealFunctionGenericType,tealFunctionTypeArgs,tealUnion,tealTypeComma
-	\ skipwhite skipempty skipnl
-syn region tealGenericType start=/</ end=/>/ transparent contained
-	\ nextgroup=tealUnion,tealTypeComma
-	\ skipwhite skipempty skipnl
-	\ contains=tealGeneric
-syn region tealFunctionGenericType 
-	\ matchgroup=tealParens
-	\ start=/</ end=/>/ transparent contained
-	\ nextgroup=tealFunctionTypeArgs
-	\ skipwhite skipempty skipnl
-	\ contains=tealGeneric
-syn match tealGeneric contained /\K\k*/
-syn region tealFunctionTypeArgs contained transparent extend
-	\ matchgroup=tealParens
-	\ start=/(/ end=/)/
-	\ contains=@tealType
-	\ nextgroup=tealParenTypesAnnotation
-	\ skipwhite skipempty skipnl
-syn match tealParenTypesAnnotation /:/ contained
-	\ nextgroup=@tealType,tealParenTypes
-	\ skipwhite skipempty skipnl
-syn region tealParenTypes contained transparent extend
-	\ matchgroup=tealParens
-	\ start=/(/ end=/)/
-	\ contains=@tealType
-	\ nextgroup=tealUnion
-	\ skipwhite skipempty skipnl
-syn region tealTableType start=/{/ end=/}/ contained
-	\ nextgroup=tealUnion,tealTypeComma
-	\ skipwhite skipempty skipnl
-	\ contains=@tealType
-syn cluster tealType contains=
-	\ tealBasicType,
-	\ tealFunctionType,
-	\ tealFunctionTypeArgs,
-	\ tealParenTypesAnnotation,
-	\ tealParenTypes,
-	\ tealTableType,
-	\ tealGenericType
-syn match tealTypeAnnotation /:/ contained
-	\ nextgroup=@tealType
-	\ skipwhite skipempty skipnl
+
+" Programmatically generate type definitions for single types and type lists
+syn match tealUnion /|/ contained nextgroup=@tealType skipwhite skipempty skipnl
+syn match tealSingleUnion /|/ contained nextgroup=@tealSingleType skipwhite skipempty skipnl
+
+syn match tealTypeComma /,/ contained nextgroup=@tealType skipwhite skipempty skipnl
+syn match tealSingleTypeAnnotation /:/ contained nextgroup=@tealSingleType skipwhite skipempty skipnl
+syn match tealTypeAnnotation /:/ contained nextgroup=@tealType skipwhite skipempty skipnl
+syn match tealGeneric /\K\k*/ contained
+
+let s:typePatterns = {
+	\ 'tealFunctionType': {
+	\	'synType': 'match',
+	\	'patt': '\<function\>',
+	\	'nextgroup': ['tealFunctionGenericType,tealFunctionArgsType'],
+	\ },
+	\ 'tealBasicType': {
+	\	'synType': 'match',
+	\	'patt': '\K\k*\(\.\K\k*\)*',
+	\	'nextgroup': ['tealGenericType'],
+	\ },
+	\ 'tealFunctionGenericType': {
+	\	'synType': 'region',
+	\	'start': '<',
+	\	'end': '>',
+	\	'nextgroup': ['tealFunctionArgsType'],
+	\	'contains': ['tealGeneric'],
+	\ },
+	\ 'tealGenericType': {
+	\	'synType': 'region',
+	\	'start': '<',
+	\	'end': '>',
+	\	'contains': ['tealGeneric'],
+	\ },
+	\ 'tealFunctionArgsType': {
+	\	'synType': 'region',
+	\	'start': '(',
+	\	'end': ')',
+	\	'contains': ['@tealType'],
+	\	'nextgroup': ['tealTypeAnnotation']
+	\ },
+	\ 'tealTableType': {
+	\	'synType': 'region',
+	\	'start': '{',
+	\	'end': '}',
+	\	'matchgroup': 'tealTable',
+	\	'contains': ['@tealType'],
+	\	'nextgroup': ['tealTypeAnnotation']
+	\ },
+\ }
+
+" Add nextgroup=tealUnion,tealTypeComma and
+" make a second syntax item with nextgroup=tealSingleUnion
+" the effect of this is that we have @tealType, which is a type list
+" and @tealSingleType for function arguments
+function s:MakeSyntaxItem(typeName, props)
+	for single in [v:true, v:false]
+		let tname = a:typeName
+		if single
+			let tname .= 'Single'
+		endif
+		let cmd = 'syntax '
+		let cmd .= a:props.synType
+		let cmd .= ' '
+		let cmd .= tname
+		let cmd .= ' '
+		if a:props.synType == 'region'
+			if exists("a:props.matchgroup")
+				let cmd .= 'matchgroup=' . a:props.matchgroup
+			endif
+			let cmd .= ' start=+' . a:props.start . '+ end=+' . a:props.end
+		else
+			let cmd .= '+' . a:props.patt
+		endif
+		let cmd .= '+ '
+		let cmd .= 'contained '
+		if exists("a:props.contains")
+			let cmd .= 'contains=' . join(a:props.contains, ",") . ' '
+		endif
+		let cmd .= 'nextgroup='
+		if exists("a:props.nextgroup")
+			let nextgroup = copy(a:props.nextgroup)
+		else
+			let nextgroup = []
+		endif
+		call map(nextgroup, {-> single && v:val[-4:] == "Type" ? v:val . "Single" : v:val})
+		if single
+			let nextgroup += ['tealSingleUnion']
+		else
+			let nextgroup += ['tealUnion', 'tealTypeComma']
+		endif
+		let cmd .= join(nextgroup, ',')
+		let cmd .= ' skipwhite skipempty skipnl'
+		exec cmd
+		exec "syn cluster teal" . (single ? "Single" : "") . "Type add=" . tname
+	endfor
+	exec "highlight link " . tname . "Single " . tname
+endfunction
+call map(s:typePatterns, {tname, props -> s:MakeSyntaxItem(tname, props)})
 
 syn cluster tealNewType contains=
 	\ tealRecordBlock,tealEnumBlock,tealNominalFuncType
 " }}}
 " {{{ Function call
-syn match tealColon /:/
-	\ nextgroup=@tealType,tealFunctionCall
-	\ skipwhite skipempty skipnl
-syn match tealFunctionCall /\(:\?\)\@1<=\zs\K\k*\ze\s*\n*\s*\(["'({]\|\[=*\[\)/
+" local varlist : typelist = function(varname: type): typelist
+" end
+" local a = b:c()
+syn match tealFunctionCall /\zs\K\k*\ze\s*\n*\s*\(["'({]\|\[=*\[\)/
 " }}}
 " {{{ Operators
 " Symbols
@@ -152,11 +206,8 @@ syn region tealBracket transparent
 syn region tealFunctionBlock transparent
 	\ matchgroup=tealFunction
 	\ start=/\<function\>/ end=/\<end\>/
-	\ contains=@tealStatement,tealFunctionSignature
-syn region tealFunctionSignature contained transparent
-	\ start=/\(\<function\>\)\@<=/ end=/)/ keepend
-	\ contains=tealFunctionName,tealFunctionGeneric,tealFunctionArgs
-syn match tealFunctionName /\K\k*\(\.\K\k*\)*\(:\K\k*\)\?/ contained
+	\ contains=@tealStatement,tealFunctionName
+syn match tealFunctionName /\(\<function\>\)\@8<=\s\+\K\k*\(\.\K\k*\)*\(:\K\k*\)\?/ contained
 	\ nextgroup=tealFunctionGeneric,tealFunctionArgs
 	\ skipwhite skipempty skipnl
 syn region tealFunctionGeneric contained transparent
@@ -167,15 +218,13 @@ syn region tealFunctionGeneric contained transparent
 syn region tealFunctionArgs contained transparent
 	\ matchgroup=tealParens
 	\ start=/(/ end=/)/
-	\ contains=@tealBase,tealFunctionArgName,
-	\ tealFunctionArgTypeAnnotation,@tealType
+	\ contains=tealFunctionArgName,tealFunctionArgComma,tealSingleTypeAnnotation
 	\ nextgroup=tealTypeAnnotation
-syn match tealFunctionArgName contained /\K\k*/
-	\ nextgroup=tealFunctionArgTypeAnnotation,tealFunctionArgComma
 	\ skipwhite skipempty skipnl
-syn region tealFunctionArgTypeAnnotation contained transparent
-	\ start=/:/ end=/\(,\|)\)\@1<=/ skip=/:/
-	\ contains=@tealType
+syn match tealFunctionArgName contained /\K\k*/
+	\ nextgroup=tealSingleTypeAnnotation,tealFunctionArgComma
+	\ skipwhite skipempty skipnl
+syn match tealFunctionArgComma contained /,/
 	\ nextgroup=tealFunctionArgName
 	\ skipwhite skipempty skipnl
 " }}}
@@ -243,13 +292,6 @@ syn region tealRepeatBlock
 	\ matchgroup=tealRepeatUntil transparent
 	\ contains=@tealStatement
 	\ start=/\<repeat\>/ end=/\<until\>/
-" }}}
-" {{{ Table Constructor
-syn region tealTableConstructor
-	\ matchgroup=tealTable
-	\ start=/{/ end=/}/
-	\ contains=@tealExpression,tealTypeAnnotation
-
 " }}}
 " {{{ Goto
 syn keyword tealGoto goto
