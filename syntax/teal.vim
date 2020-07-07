@@ -206,8 +206,11 @@ syn region tealBracket transparent
 syn region tealFunctionBlock transparent
 	\ matchgroup=tealFunction
 	\ start=/\<function\>/ end=/\<end\>/
-	\ contains=@tealStatement,tealFunctionName
-syn match tealFunctionName /\(\<function\>\)\@8<=\s\+\K\k*\(\.\K\k*\)*\(:\K\k*\)\?/ contained
+	\ contains=@tealStatement,tealFunctionStart
+syn match tealFunctionStart /\(\<function\>\)\@8<=\s*/ contained
+	\ nextgroup=tealFunctionName,tealFunctionGeneric,tealFunctionArgs
+	\ skipwhite skipempty skipnl
+syn match tealFunctionName /\K\k*\(\.\K\k*\)*\(:\K\k*\)\?/ contained
 	\ nextgroup=tealFunctionGeneric,tealFunctionArgs
 	\ skipwhite skipempty skipnl
 syn region tealFunctionGeneric contained transparent
