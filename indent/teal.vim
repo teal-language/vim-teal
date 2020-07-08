@@ -33,7 +33,7 @@ let s:ignore_patt = 'tealString\|tealLongString'
 	\ . '\|tealComment\|tealLongComment' 
 	\ . '\|Type$'
 
-let s:bin_op = "\\C\\([<>=~^&|*/\%+-.:]\\|or\\|and\\|is\\|as\\)"
+let s:bin_op = "\\C\\([<>=~^&|*/\%+-.:]\\|\\<or\\>\\|\\<and\\>\\|\\<is\\>\\|\\<as\\>\\)"
 let s:starts_with_bin_op = "^[\t ]*" . s:bin_op 
 let s:ends_with_bin_op = s:bin_op . "[\t ]*$"
 " }}}
