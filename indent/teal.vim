@@ -9,6 +9,9 @@ if exists("b:did_indent")
 endif
 let b:did_indent = 1
 
+let s:cpo_save = &cpo
+set cpo&vim
+
 setlocal autoindent
 setlocal nosmartindent
 
@@ -20,12 +23,12 @@ if exists("*GetTealIndent")
 endif
 " }}}
 " {{{ Patterns
-let s:begin_block_open_patt = '^\s*\%(if\>\|for\>\|while\>\|repeat\>\|else\>\|elseif\>\|do\>\|then\>\)'
-let s:end_block_open_patt = '\({\|(\|enum\>\)\s*$'
-let s:block_close_patt = '^\s*\%(end\>\|else\>\|elseif\>\|until\>\|}\|)\)'
+let s:begin_block_open_patt = '\C^\s*\%(if\>\|for\>\|while\>\|repeat\>\|else\>\|elseif\>\|do\>\|then\>\)'
+let s:end_block_open_patt = '\C\({\|(\|enum\>\)\s*$'
+let s:block_close_patt = '\C^\s*\%(end\>\|else\>\|elseif\>\|until\>\|}\|)\)'
 
-let s:function_patt = '\<function\>'
-let s:record_patt = '\<record\>'
+let s:function_patt = '\C\<function\>'
+let s:record_patt = '\C\<record\>'
 let s:ignore_patt = 'tealString'
 	\ . '\|tealLongString' 
 	\ . '\|tealComment' 
@@ -39,7 +42,7 @@ let s:ignore_patt = 'tealString'
 	\ . '\|tealVarName'
 	\ . '\|tealTypeAnnotation'
 
-let s:bin_op = "\\([<>=~^&|*/\%+-.:]\\|or\\|and\\|is\\|as\\)"
+let s:bin_op = "\\C\\([<>=~^&|*/\%+-.:]\\|or\\|and\\|is\\|as\\)"
 let s:starts_with_bin_op = "^[\t ]*" . s:bin_op 
 let s:ends_with_bin_op = s:bin_op . "[\t ]*$"
 " }}}
@@ -95,7 +98,7 @@ function GetTealIndent()
 	let match_index = s:MatchPatt(prev_line_num, prev_line, s:record_patt, match_index)
 
 	" If the previous line opens a block (and doesnt close it), >>
-	if match_index != -1 && prev_line !~# '\<end\>\|\<until\>'
+	if match_index != -1 && prev_line !~# '\C\<end\>\|\<until\>'
 		let i += 1
 	endif
 
@@ -132,3 +135,6 @@ function GetTealIndent()
 	return indent(prev_line_num) + (shiftwidth() * i)
 endfunction
 " }}}
+
+let &cpo = s:cpo_save
+unlet s:cpo_save
