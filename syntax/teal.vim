@@ -3,6 +3,10 @@
 if exists("b:current_syntax")
 	finish
 endif
+if !has("lambda")
+	echoerr "vim-teal: Teal syntax requires lambda support, please update your vim installation"
+	finish
+endif
 
 let s:cpo_save = &cpo
 set cpo&vim
@@ -25,8 +29,9 @@ syn cluster tealStatement contains=
 	\ tealLocal,tealGlobal
 
 " {{{ ), ], end, etc error
-syntax match tealError "\()\|}\|\]\)"
-syntax match tealError "\<\%(end\|else\|elseif\|then\|until\|in\)\>"
+syn match tealError "\()\|}\|\]\)"
+syn match tealError "\<\%(end\|else\|elseif\|then\|until\|in\)\>"
+syn match tealInvalidIdentifier /\K\k*/ contained
 " }}}
 " {{{ Table Constructor
 syn region tealTableConstructor
@@ -211,7 +216,7 @@ syn match tealFunctionStart /\(\<function\>\)\@8<=\s*/ contained
 	\ nextgroup=tealFunctionName,tealFunctionGeneric,tealFunctionArgs
 	\ skipwhite skipempty skipnl
 syn match tealFunctionName /\K\k*\(\.\K\k*\)*\(:\K\k*\)\?/ contained
-	\ nextgroup=tealFunctionGeneric,tealFunctionArgs
+	\ nextgroup=tealFunctionGeneric,tealFunctionArgs,tealInvalidIdentifier
 	\ skipwhite skipempty skipnl
 syn region tealFunctionGeneric contained transparent
 	\ start=/</ end=/>/
@@ -477,6 +482,7 @@ hi def link tealNumber                Number
 hi def link tealOperator              Operator
 hi def link tealBuiltin               Identifier
 hi def link tealError                 Error
+hi def link tealInvalidIdentifier     Error
 hi def link tealGeneric               Type
 hi def link tealTodo                  Todo
 " }}}
