@@ -66,6 +66,7 @@ let s:typePatterns = {
 	\	'synType': 'region',
 	\	'start': '<',
 	\	'end': '>',
+	\	'matchgroup': 'tealParens',
 	\	'nextgroup': ['tealFunctionArgsType'],
 	\	'contains': ['tealGeneric'],
 	\ },
@@ -73,12 +74,14 @@ let s:typePatterns = {
 	\	'synType': 'region',
 	\	'start': '<',
 	\	'end': '>',
+	\	'matchgroup': 'tealParens',
 	\	'contains': ['tealGeneric'],
 	\ },
 	\ 'tealFunctionArgsType': {
 	\	'synType': 'region',
 	\	'start': '(',
 	\	'end': ')',
+	\	'matchgroup': 'tealParens',
 	\	'contains': ['@tealType'],
 	\	'nextgroup': ['tealTypeAnnotation']
 	\ },
@@ -96,11 +99,16 @@ let s:typePatterns = {
 " make a second syntax item with nextgroup=tealSingleUnion
 " the effect of this is that we have @tealType, which is a type list
 " and @tealSingleType for function arguments
+" {{{ ToSingleName
+function s:ToSingleName(str)
+	return a:str[:-5] . 'SingleType'
+endfunction
+" }}}
 function s:MakeSyntaxItem(typeName, props)
 	for single in [v:true, v:false]
 		let tname = a:typeName
 		if single
-			let tname .= 'Single'
+			let tname = s:ToSingleName(tname)
 		endif
 		let cmd = 'syntax '
 		let cmd .= a:props.synType
@@ -126,7 +134,7 @@ function s:MakeSyntaxItem(typeName, props)
 		else
 			let nextgroup = []
 		endif
-		call map(nextgroup, {-> single && v:val[-4:] == "Type" ? v:val . "Single" : v:val})
+		call map(nextgroup, {-> single && v:val[-4:] == "Type" ? s:ToSingleName(v:val) : v:val})
 		if single
 			let nextgroup += ['tealSingleUnion']
 		else
@@ -137,7 +145,7 @@ function s:MakeSyntaxItem(typeName, props)
 		exec cmd
 		exec "syn cluster teal" . (single ? "Single" : "") . "Type add=" . tname
 	endfor
-	exec "highlight link " . tname . "Single " . tname
+	exec "highlight link " . s:ToSingleName(tname) . " " . tname
 endfunction
 call map(s:typePatterns, {tname, props -> s:MakeSyntaxItem(tname, props)})
 
