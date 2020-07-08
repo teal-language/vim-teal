@@ -29,18 +29,9 @@ let s:block_close_patt = '\C^\s*\%(end\>\|else\>\|elseif\>\|until\>\|}\|)\)'
 
 let s:function_patt = '\C\<function\>'
 let s:record_patt = '\C\<record\>'
-let s:ignore_patt = 'tealString'
-	\ . '\|tealLongString' 
-	\ . '\|tealComment' 
-	\ . '\|tealLongComment' 
-	\ . '\|tealBasicType'
-	\ . '\|tealFunctionType'
-	\ . '\|tealFunctionTypeArgs'
-	\ . '\|tealParenTypes'
-	\ . '\|tealTableType'
-	\ . '\|tealGenericType'
-	\ . '\|tealVarName'
-	\ . '\|tealTypeAnnotation'
+let s:ignore_patt = 'tealString\|tealLongString' 
+	\ . '\|tealComment\|tealLongComment' 
+	\ . '\|Type$'
 
 let s:bin_op = "\\C\\([<>=~^&|*/\%+-.:]\\|or\\|and\\|is\\|as\\)"
 let s:starts_with_bin_op = "^[\t ]*" . s:bin_op 
