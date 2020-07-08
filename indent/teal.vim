@@ -128,6 +128,11 @@ function GetTealIndent(lnum)
 		let i -= 1
 	endif
 
+	if i > 1
+		let i = 1
+	elseif i < -1
+		let i = -1
+	endif
 	return indent(prev_line_num) + (shiftwidth() * i)
 endfunction
 " }}}
