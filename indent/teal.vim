@@ -15,7 +15,7 @@ set cpo&vim
 setlocal autoindent
 setlocal nosmartindent
 
-setlocal indentexpr=GetTealIndent()
+setlocal indentexpr=GetTealIndent(v:lnum)
 setlocal indentkeys+=0=end,0=until
 
 if exists("*GetTealIndent")
@@ -24,7 +24,7 @@ endif
 " }}}
 " {{{ Patterns
 let s:begin_block_open_patt = '\C^\s*\%(if\>\|for\>\|while\>\|repeat\>\|else\>\|elseif\>\|do\>\|then\>\)'
-let s:end_block_open_patt = '\C\({\|(\|enum\>\)\s*$'
+let s:end_block_open_patt = '\C\({\|(\|enum\>\|then\>\)\s*$'
 let s:block_close_patt = '\C^\s*\%(end\>\|else\>\|elseif\>\|until\>\|}\|)\)'
 
 let s:function_patt = '\C\<function\>'
@@ -80,11 +80,11 @@ function s:MatchPatt(line_num, line_content, patt, prev_match)
 endfunction
 " }}}
 " {{{ The Indent function
-function GetTealIndent()
-	if s:IsInCommentOrString(v:lnum, 1)
-		return indent(v:lnum - 1)
+function GetTealIndent(lnum)
+	if s:IsInCommentOrString(a:lnum, 1)
+		return indent(a:lnum - 1)
 	endif
-	let prev_line_num = s:PrevLineOfCode(v:lnum - 1)
+	let prev_line_num = s:PrevLineOfCode(a:lnum - 1)
 	if prev_line_num == 0
 		return 0
 	endif
@@ -103,8 +103,8 @@ function GetTealIndent()
 	endif
 
 	" If the current line closes a block, <<
-	let curr_line = s:GetLineContent(v:lnum)
-	let match_index = s:MatchPatt(v:lnum, curr_line, s:block_close_patt, -1)
+	let curr_line = s:GetLineContent(a:lnum)
+	let match_index = s:MatchPatt(a:lnum, curr_line, s:block_close_patt, -1)
 	if match_index != -1
 		let i -= 1
 	endif
@@ -112,7 +112,7 @@ function GetTealIndent()
 	" if line starts with bin op and previous line doesnt, >>
 	let current_starts_with_bin_op = 0
 	let prev_starts_with_bin_op = 0
-	let match_index = s:MatchPatt(v:lnum, curr_line, s:starts_with_bin_op, -1)
+	let match_index = s:MatchPatt(a:lnum, curr_line, s:starts_with_bin_op, -1)
 	if match_index != -1
 		let current_starts_with_bin_op = 1
 	endif
@@ -122,14 +122,10 @@ function GetTealIndent()
 		let prev_starts_with_bin_op = 1
 	endif
 
-	if current_starts_with_bin_op 
-		if !prev_starts_with_bin_op
-			let i += 1
-		endif
-	else
-		if prev_starts_with_bin_op
-			let i -= 1
-		endif
+	if current_starts_with_bin_op && !prev_starts_with_bin_op
+		let i += 1
+	elseif !current_starts_with_bin_op && prev_starts_with_bin_op
+		let i -= 1
 	endif
 
 	return indent(prev_line_num) + (shiftwidth() * i)
