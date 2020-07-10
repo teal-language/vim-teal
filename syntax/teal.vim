@@ -55,7 +55,7 @@ let s:typePatterns = {
 	\ 'tealFunctionType': {
 	\	'synType': 'match',
 	\	'patt': '\<function\>',
-	\	'nextgroup': ['tealFunctionGenericType,tealFunctionArgsType'],
+	\	'nextgroup': ['tealFunctionGenericType', 'tealFunctionArgsType'],
 	\ },
 	\ 'tealBasicType': {
 	\	'synType': 'match',
@@ -105,6 +105,9 @@ function s:ToSingleName(str)
 endfunction
 " }}}
 function s:MakeSyntaxItem(typeName, props)
+	if exists("a:props.contains")
+		let a:props.contains += ['tealLongComment']
+	endif
 	for single in [v:true, v:false]
 		let tname = a:typeName
 		if single
@@ -320,8 +323,8 @@ syn keyword tealConstant nil true false
 " {{{ Strings
 syn match tealSpecial contained #\\[\\abfnrtvz'"]\|\\x[[:xdigit:]]\{2}\|\\[[:digit:]]\{,3}#
 syn region tealLongString matchgroup=tealString start="\[\z(=*\)\[" end="\]\z1\]" contains=@Spell
-syn region tealString  start=+'+ end=+'+ skip=+\\\\\|\\'+ contains=tealSpecial,@Spell
-syn region tealString  start=+"+ end=+"+ skip=+\\\\\|\\"+ contains=tealSpecial,@Spell
+syn region tealString  start=+'+ end=+'+ skip=+\\\\\|\\'+ contains=tealSpecial,@Spell oneline
+syn region tealString  start=+"+ end=+"+ skip=+\\\\\|\\"+ contains=tealSpecial,@Spell oneline
 " }}}
 " {{{ Numbers
 " integer number
