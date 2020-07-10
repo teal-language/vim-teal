@@ -37,7 +37,7 @@ syn match tealInvalidIdentifier /\K\k*/ contained
 syn region tealTableConstructor
 	\ matchgroup=tealTable
 	\ start=/{/ end=/}/
-	\ contains=@tealExpression,tealTypeAnnotation
+	\ contains=@tealExpression,tealSingleTypeAnnotation
 
 " }}}
 " {{{ Types
@@ -91,7 +91,6 @@ let s:typePatterns = {
 	\	'end': '}',
 	\	'matchgroup': 'tealTable',
 	\	'contains': ['@tealType'],
-	\	'nextgroup': ['tealTypeAnnotation']
 	\ },
 \ }
 
@@ -156,9 +155,6 @@ syn cluster tealNewType contains=
 	\ tealRecordBlock,tealEnumBlock,tealNominalFuncType
 " }}}
 " {{{ Function call
-" local varlist : typelist = function(varname: type): typelist
-" end
-" local a = b:c()
 syn match tealFunctionCall /\zs\K\k*\ze\s*\n*\s*\(["'({]\|\[=*\[\)/
 " }}}
 " {{{ Operators
@@ -167,7 +163,7 @@ syn match tealOperator "[#<>=~^&|*/%+-]\|\.\."
 " Words
 syn keyword tealOperator and or not
 syn keyword tealOperator is as
-	\ nextgroup=@tealType
+	\ nextgroup=@tealSingleType
 	\ skipempty skipnl skipwhite
 syn match tealVarargs /\.\.\./
 " }}}
@@ -259,7 +255,7 @@ syn region tealRecordGeneric contained transparent
 	\ start=/\(\<record\>\)\@6<=\s*</ end=/>/
 	\ contains=tealGeneric
 syn match tealRecordItem /\K\k*/ contained
-	\ nextgroup=tealTypeAnnotation,tealRecordAssign
+	\ nextgroup=tealSingleTypeAnnotation,tealRecordAssign
 	\ skipwhite skipnl skipempty
 syn match tealRecordAssign /=/ contained
 	\ nextgroup=@tealNewType
