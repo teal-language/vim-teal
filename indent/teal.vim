@@ -23,38 +23,27 @@ if exists("*GetTealIndent")
 endif
 " }}}
 " {{{ Patterns
-let s:begin_block_open_patt = '\C^\s*\%(if\>\|for\>\|while\>\|repeat\>\|else\>\|elseif\>\|do\>\|then\>\)'
-let s:end_block_open_patt = '\C\({\|(\|enum\>\|then\>\)\s*$'
-let s:block_close_patt = '\C^\s*\%(end\>\|else\>\|elseif\>\|until\>\|}\|)\)'
 
-let s:function_patt = '\C\<function\>'
-let s:record_patt = '\C\<record\>'
-let s:ignore_patt = 'tealString'
-	\ . '\|tealLongString' 
-	\ . '\|tealComment' 
-	\ . '\|tealLongComment' 
-	\ . '\|tealBasicType'
-	\ . '\|tealFunctionType'
-	\ . '\|tealFunctionTypeArgs'
-	\ . '\|tealParenTypes'
-	\ . '\|tealTableType'
-	\ . '\|tealGenericType'
-	\ . '\|tealVarName'
-	\ . '\|tealTypeAnnotation'
+" [\t ] seems to be faster than \s
+let s:begin_block_open_patt = '\C^[\t ]*\%(if\|for\|while\|repeat\|else\|elseif\|do\|then\)\>'
+let s:end_block_open_patt = '\C\%({\|enum\|then\)[\t ]*$'
+let s:block_close_patt = '\C^[\t ]*\%(\%(end\|else\|elseif\|until\)\>\|}\|)\)'
 
-let s:bin_op = "\\C\\([<>=~^&|*/\%+-.:]\\|\\<or\\>\\|\\<and\\>\\|\\<is\\>\\|\\<as\\>\\)"
-let s:starts_with_bin_op = "^[\t ]*" . s:bin_op 
-let s:ends_with_bin_op = s:bin_op . "[\t ]*$"
+let s:middle_patt = '\C\<\%(function\|record\)\>'
+let s:ignore_patt = 'String$\|Comment$\|Type$'
+
+let s:starts_with_bin_op = '\C^[\t ]*\([<>=~^&|*/%+-.:]\|\%(or\|and\|is\|as\)\>\)'
+
 " }}}
 " {{{ Helpers
-function s:IsInCommentOrString(line_num, column)
-	return synIDattr(synID(a:line_num, a:column, 1), 'name') =~# 'tealLongComment\|tealLongString'
-		\ && !(getline(a:line_number) =~# '^\s*\%(--\)\?\[=*\[')
+function s:IsIgnorable(line_num, column)
+	return synIDattr(synID(a:line_num, a:column, 1), 'name') =~# s:ignore_patt
+		\ && !(getline(a:line_number) =~# '^[\t ]*\%(--\)\?\[=*\[')
 endfunction
 
 function s:PrevLineOfCode(line_num)
 	let line_num = prevnonblank(a:line_num)
-	while s:IsInCommentOrString(line_num, 1)
+	while s:IsIgnorable(line_num, 1)
 		let line_num = prevnonblank(line_num - 1)
 	endwhile
 	return line_num
@@ -81,7 +70,7 @@ endfunction
 " }}}
 " {{{ The Indent function
 function GetTealIndent(lnum)
-	if s:IsInCommentOrString(a:lnum, 1)
+	if s:IsIgnorable(a:lnum, 1)
 		return indent(a:lnum - 1)
 	endif
 	let prev_line_num = s:PrevLineOfCode(a:lnum - 1)
@@ -94,11 +83,10 @@ function GetTealIndent(lnum)
 	let i = 0
 	let match_index = s:MatchPatt(prev_line_num, prev_line, s:begin_block_open_patt, -1)
 	let match_index = s:MatchPatt(prev_line_num, prev_line, s:end_block_open_patt, match_index)
-	let match_index = s:MatchPatt(prev_line_num, prev_line, s:function_patt, match_index)
-	let match_index = s:MatchPatt(prev_line_num, prev_line, s:record_patt, match_index)
+	let match_index = s:MatchPatt(prev_line_num, prev_line, s:middle_patt, match_index)
 
 	" If the previous line opens a block (and doesnt close it), >>
-	if match_index != -1 && prev_line !~# '\C\<end\>\|\<until\>'
+	if match_index != -1 && prev_line !~# '\C\<\%(end\|until\)\>'
 		let i += 1
 	endif
 
@@ -129,9 +117,11 @@ function GetTealIndent(lnum)
 	endif
 
 	if i > 1
+
 		let i = 1
-	elseif i < -1
-		let i = -1
+  " elseif i < -1
+	" 	let i = -1
+
 	endif
 	return indent(prev_line_num) + (shiftwidth() * i)
 endfunction
