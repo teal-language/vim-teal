@@ -23,6 +23,7 @@ if exists("*GetTealIndent")
 endif
 " }}}
 " {{{ Patterns
+
 " [\t ] seems to be faster than \s
 let s:begin_block_open_patt = '\C^[\t ]*\%(if\|for\|while\|repeat\|else\|elseif\|do\|then\)\>'
 let s:end_block_open_patt = '\C\%({\|enum\|then\)[\t ]*$'
@@ -32,6 +33,7 @@ let s:middle_patt = '\C\<\%(function\|record\)\>'
 let s:ignore_patt = 'String$\|Comment$\|Type$'
 
 let s:starts_with_bin_op = '\C^[\t ]*\([<>=~^&|*/%+-.:]\|\%(or\|and\|is\|as\)\>\)'
+
 " }}}
 " {{{ Helpers
 function s:IsIgnorable(line_num, column)
@@ -115,9 +117,11 @@ function GetTealIndent(lnum)
 	endif
 
 	if i > 1
+
 		let i = 1
-	" elseif i < -1
+  " elseif i < -1
 	" 	let i = -1
+
 	endif
 	return indent(prev_line_num) + (shiftwidth() * i)
 endfunction
