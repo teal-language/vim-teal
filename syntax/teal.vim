@@ -31,7 +31,9 @@ syn cluster tealStatement contains=
 " {{{ ), ], end, etc error
 syn match tealError "\()\|}\|\]\)"
 syn match tealError "\<\%(end\|else\|elseif\|then\|until\|in\)\>"
-syn match tealInvalidIdentifier /\K\k*/ contained
+syn match tealInvalid /\S\+/ contained
+	\ nextgroup=tealInvalid
+	\ skipwhite skipempty skipnl
 " }}}
 " {{{ Table Constructor
 syn region tealTableConstructor
@@ -223,7 +225,7 @@ syn match tealFunctionStart /\(\<function\>\)\@8<=\s*/ contained
 	\ nextgroup=tealFunctionName,tealFunctionGeneric,tealFunctionArgs
 	\ skipwhite skipempty skipnl
 syn match tealFunctionName /\K\k*\(\.\K\k*\)*\(:\K\k*\)\?/ contained
-	\ nextgroup=tealFunctionGeneric,tealFunctionArgs,tealInvalidIdentifier
+	\ nextgroup=tealFunctionGeneric,tealFunctionArgs,tealInvalid
 	\ skipwhite skipempty skipnl
 syn region tealFunctionGeneric contained transparent
 	\ start=/</ end=/>/
@@ -237,7 +239,7 @@ syn region tealFunctionArgs contained transparent
 	\ nextgroup=tealTypeAnnotation
 	\ skipwhite skipempty skipnl
 syn match tealFunctionArgName contained /\K\k*/
-	\ nextgroup=tealSingleTypeAnnotation,tealFunctionArgComma
+	\ nextgroup=tealSingleTypeAnnotation,tealFunctionArgComma,tealInvalid
 	\ skipwhite skipempty skipnl
 syn match tealFunctionArgComma contained /,/
 	\ nextgroup=tealFunctionArgName
@@ -255,10 +257,10 @@ syn region tealRecordGeneric contained transparent
 	\ start=/\(\<record\>\)\@6<=\s*</ end=/>/
 	\ contains=tealGeneric
 syn match tealRecordItem /\K\k*/ contained
-	\ nextgroup=tealSingleTypeAnnotation,tealRecordAssign
+	\ nextgroup=tealSingleTypeAnnotation,tealRecordAssign,tealInvalid
 	\ skipwhite skipnl skipempty
 syn match tealRecordAssign /=/ contained
-	\ nextgroup=@tealNewType
+	\ nextgroup=@tealNewType,tealInvalid
 	\ skipwhite skipnl skipempty
 hi def link tealRecordAssign tealOperator
 " }}}
@@ -266,7 +268,7 @@ hi def link tealRecordAssign tealOperator
 syn region tealEnumBlock
 	\ matchgroup=tealEnum transparent
 	\ start="\<enum\>" end="\<end\>"
-	\ contains=tealString,tealLongString,tealComment,tealLongComment
+	\ contains=tealString,tealLongString,tealComment,tealLongComment,tealInvalid
 " }}}
 " {{{ if ... then, elseif ... then, then ... end, else
 syn region tealIfThen
@@ -489,7 +491,7 @@ hi def link tealNumber                Number
 hi def link tealOperator              Operator
 hi def link tealBuiltin               Identifier
 hi def link tealError                 Error
-hi def link tealInvalidIdentifier     Error
+hi def link tealInvalid               Error
 hi def link tealGeneric               Type
 hi def link tealTodo                  Todo
 " }}}
