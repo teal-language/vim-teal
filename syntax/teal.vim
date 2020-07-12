@@ -32,8 +32,6 @@ syn cluster tealStatement contains=
 syn match tealError "\()\|}\|\]\)"
 syn match tealError "\<\%(end\|else\|elseif\|then\|until\|in\)\>"
 syn match tealInvalid /\S\+/ contained
-	\ nextgroup=tealInvalid
-	\ skipwhite skipempty skipnl
 " }}}
 " {{{ Table Constructor
 syn region tealTableConstructor
