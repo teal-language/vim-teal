@@ -172,9 +172,8 @@ syn match tealVarargs /\.\.\./
 " {{{ Comments
 syn match tealComment "\%^#!.*$"
 syn match tealComment /--.*$/ contains=tealTodo,@Spell
-syn keyword tealTodo contained TODO FIXME XXX
+syn keyword tealTodo contained TODO todo FIXME fixme TBD tbd XXX
 syn region tealLongComment start=/--\[\z(=*\)\[/ end=/\]\z1\]/
-
 " }}}
 " {{{ functiontype
 syn keyword tealNominalFuncType functiontype
@@ -204,7 +203,6 @@ syn keyword tealGlobal global
 syn keyword tealBreak break
 syn keyword tealReturn return
 syn keyword tealSelf self
-
 " }}}
 " {{{ Parens
 syn region tealParen transparent
@@ -313,7 +311,6 @@ syn region tealRepeatBlock
 " {{{ Goto
 syn keyword tealGoto goto
 syn match tealLabel /::\K\k*::/
-
 " }}}
 " {{{ true, false, nil, etc...
 syn keyword tealConstant nil true false
@@ -321,8 +318,8 @@ syn keyword tealConstant nil true false
 " {{{ Strings
 syn match tealSpecial contained #\\[\\abfnrtvz'"]\|\\x[[:xdigit:]]\{2}\|\\[[:digit:]]\{,3}#
 syn region tealLongString matchgroup=tealString start="\[\z(=*\)\[" end="\]\z1\]" contains=@Spell
-syn region tealString  start=+'+ end=+'+ skip=+\\\\\|\\'+ contains=tealSpecial,@Spell oneline
-syn region tealString  start=+"+ end=+"+ skip=+\\\\\|\\"+ contains=tealSpecial,@Spell oneline
+syn region tealString  start=+'+ end=+'\|$+ skip=+\\\\\|\\'+ contains=tealSpecial,@Spell
+syn region tealString  start=+"+ end=+"\|$+ skip=+\\\\\|\\"+ contains=tealSpecial,@Spell
 " }}}
 " {{{ Numbers
 " integer number
