@@ -38,7 +38,7 @@ let s:starts_with_bin_op = '\C^[\t ]*\([<>=~^&|*/%+-.:]\|\%(or\|and\|is\|as\)\>\
 " {{{ Helpers
 function s:IsIgnorable(line_num, column)
 	return synIDattr(synID(a:line_num, a:column, 1), 'name') =~# s:ignore_patt
-		\ && !(getline(a:line_number) =~# '^[\t ]*\%(--\)\?\[=*\[')
+		\ && !(getline(a:line_num) =~# '^[\t ]*\%(--\)\?\[=*\[')
 endfunction
 
 function s:PrevLineOfCode(line_num)
@@ -50,9 +50,9 @@ function s:PrevLineOfCode(line_num)
 endfunction
 
 " strip comments
-function s:GetLineContent(line_number)
+function s:GetLineContent(line_num)
 	" remove trailing -- ...
-	let content = getline(a:line_number)
+	let content = getline(a:line_num)
 	return substitute(content, '--.*$', '', '')
 endfunction
 
