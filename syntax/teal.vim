@@ -103,7 +103,7 @@ let s:typePatterns = {
 " and @tealSingleType for function arguments
 " {{{ ToSingleName
 function s:ToSingleName(str)
-	return a:str[:-5] . 'SingleType'
+	return substitute(a:str, 'Type', 'SingleType', '')
 endfunction
 " }}}
 function s:MakeSyntaxItem(typeName, props)
@@ -139,7 +139,7 @@ function s:MakeSyntaxItem(typeName, props)
 		else
 			let nextgroup = []
 		endif
-		call map(nextgroup, {-> single && v:val[-4:] == "Type" ? s:ToSingleName(v:val) : v:val})
+		call map(nextgroup, {-> single && v:val =~# "Type" ? s:ToSingleName(v:val) : v:val})
 		if single
 			let nextgroup += ['tealSingleUnion']
 		else
