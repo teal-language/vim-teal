@@ -37,8 +37,9 @@ syn match tealInvalid /\S\+/ contained
 syn region tealTableConstructor
 	\ matchgroup=tealTable
 	\ start=/{/ end=/}/
-	\ contains=@tealExpression,tealSingleTypeAnnotation
-
+	\ contains=@tealExpression,tealTableEntryTypeAnnotation
+syn match tealTableEntryTypeAnnotation /:.\{-}\ze=/ contained
+	\ contains=@tealSingleType
 " }}}
 " {{{ Types
 
@@ -51,6 +52,7 @@ syn match tealSingleTypeAnnotation /:/ contained nextgroup=@tealSingleType skipw
 syn match tealTypeAnnotation /:/ contained nextgroup=@tealType skipwhite skipempty skipnl
 syn match tealGeneric /\K\k*/ contained
 
+" {{{ Patterns
 let s:typePatterns = {
 	\ 'tealFunctionType': {
 	\	'synType': 'match',
@@ -93,6 +95,7 @@ let s:typePatterns = {
 	\	'contains': ['@tealType'],
 	\ },
 \ }
+" }}}
 
 " Add nextgroup=tealUnion,tealTypeComma and
 " make a second syntax item with nextgroup=tealSingleUnion
@@ -155,7 +158,7 @@ syn cluster tealNewType contains=
 	\ tealRecordBlock,tealEnumBlock,tealNominalFuncType
 " }}}
 " {{{ Function call
-syn match tealFunctionCall /\zs\K\k*\ze\s*\n*\s*\(["'({]\|\[=*\[\)/
+syn match tealFunctionCall /\K\k*\ze\s*\n*\s*\(["'({]\|\[=*\[\)/
 " }}}
 " {{{ Operators
 " Symbols
