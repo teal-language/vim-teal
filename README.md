@@ -1,6 +1,8 @@
 # vim-teal
 This plugin provides [Teal](https://github.com/teal-language/tl) language support for Vim.
 
+![](media/fizzbuzz.gif)
+
 ## Features
 
 - Syntax highlighting
