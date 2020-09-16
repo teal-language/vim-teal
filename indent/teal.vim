@@ -26,10 +26,10 @@ endif
 
 " [\t ] seems to be faster than \s
 let s:begin_block_open_patt = '\C^[\t ]*\%(if\|for\|while\|repeat\|else\|elseif\|do\|then\)\>'
-let s:end_block_open_patt = '\C\%((\|{\|enum\|then\)[\t ]*$'
+let s:end_block_open_patt = '\C\%((\|{\|then\|do\)[\t ]*$'
 let s:block_close_patt = '\C^[\t ]*\%(\%(end\|else\|elseif\|until\)\>\|}\|)\)'
 
-let s:middle_patt = '\C\<\%(function\|record\)\>'
+let s:middle_patt = '\C\<\%(function\|record\|enum\)\>'
 let s:ignore_patt = 'String$\|Comment$\|Type$'
 
 let s:starts_with_bin_op = '\C^[\t ]*\([<>=~^&|*/%+-.:]\|\%(or\|and\|is\|as\)\>\)'
