@@ -30,7 +30,7 @@ syn cluster tealStatement contains=
 
 " {{{ ), ], end, etc error
 syn match tealError "\()\|}\|\]\)"
-syn match tealError "\<\%(end\|else\|elseif\|then\|until\|in\)\>"
+syn match tealError "\<\%(end\|else\|elseif\|until\|in\)\>"
 syn match tealInvalid /\S\+/ contained
 " }}}
 " {{{ Table Constructor
@@ -85,7 +85,8 @@ let s:typePatterns = {
 	\	'end': ')',
 	\	'matchgroup': 'tealParens',
 	\	'contains': ['@tealType'],
-	\	'nextgroup': ['tealTypeAnnotation']
+	\	'nextgroup': ['tealTypeAnnotation'],
+	\	'dontsub': 1,
 	\ },
 	\ 'tealTableType': {
 	\	'synType': 'region',
@@ -106,6 +107,7 @@ function s:ToSingleName(str)
 	return substitute(a:str, 'Type', 'SingleType', '')
 endfunction
 " }}}
+" {{{ MakeSyntaxItem
 function s:MakeSyntaxItem(typeName, props)
 	if exists("a:props.contains")
 		let a:props.contains += ['tealLongComment']
@@ -139,7 +141,7 @@ function s:MakeSyntaxItem(typeName, props)
 		else
 			let nextgroup = []
 		endif
-		call map(nextgroup, {-> single && v:val =~# "Type" ? s:ToSingleName(v:val) : v:val})
+		call map(nextgroup, {-> (single && v:val =~# "Type" && !exists("a:props.dontsub")) ? s:ToSingleName(v:val) : v:val})
 		if single
 			let nextgroup += ['tealSingleUnion']
 		else
@@ -152,10 +154,10 @@ function s:MakeSyntaxItem(typeName, props)
 	endfor
 	exec "highlight link " . s:ToSingleName(tname) . " " . tname
 endfunction
+" }}}
 call map(s:typePatterns, {tname, props -> s:MakeSyntaxItem(tname, props)})
 
-syn cluster tealNewType contains=
-	\ tealRecordBlock,tealEnumBlock,tealNominalFuncType
+syn cluster tealNewType contains=tealRecordBlock,tealEnumBlock
 " }}}
 " {{{ Function call
 syn match tealFunctionCall /\K\k*\ze\s*\n*\s*\(["'({]\|\[=*\[\)/
@@ -176,12 +178,16 @@ syn match tealComment /--.*$/ contains=tealTodo,@Spell
 syn keyword tealTodo contained TODO todo FIXME fixme TBD tbd XXX
 syn region tealLongComment start=/--\[\z(=*\)\[/ end=/\]\z1\]/
 " }}}
-" {{{ functiontype
-syn keyword tealNominalFuncType functiontype
-	\ nextgroup=tealFunctionGenericType,tealFunctionTypeArgs
-	\ skipempty skipnl skipwhite
-" }}}
-" {{{ local ... <const>, global ... <const>, break, return, self
+" {{{ local ... <const>, global ... <const>, local type ..., break, return, self
+syn keyword tealTypeDeclaration type contained
+	\ nextgroup=tealTypeDeclarationName
+	\ skipwhite skipempty skipnl
+syn match tealTypeDeclarationName /\K\k*/ contained
+	\ nextgroup=tealTypeDeclarationEq,tealInvalid
+	\ skipwhite skipempty skipnl
+syn match tealTypeDeclarationEq /=/ contained
+	\ nextgroup=@tealSingleType,tealRecordBlock,tealEnumBlock
+	\ skipwhite skipempty skipnl
 syn region tealAttributeBrackets contained transparent
 	\ matchgroup=tealParens
 	\ start=/</ end=/>/
@@ -196,10 +202,10 @@ syn match tealVarComma /,/ contained
 	\ nextgroup=tealVarName
 	\ skipwhite skipempty skipnl
 syn keyword tealLocal local
-	\ nextgroup=tealFunctionBlock,tealVarName
+	\ nextgroup=tealFunctionBlock,tealRecordBlock,tealEnumBlock,tealVarName,tealTypeDeclaration
 	\ skipwhite skipempty skipnl
 syn keyword tealGlobal global
-	\ nextgroup=tealFunctionBlock,tealVarName
+	\ nextgroup=tealFunctionBlock,tealRecordBlock,tealEnumBlock,tealVarName,tealTypeDeclaration
 	\ skipwhite skipempty skipnl
 syn keyword tealBreak break
 syn keyword tealReturn return
@@ -245,44 +251,65 @@ syn match tealFunctionArgComma contained /,/
 	\ skipwhite skipempty skipnl
 " }}}
 " {{{ record ... end
-syn region tealRecordBlock
+syn match tealRecordType /\K\k*/ contained
+	\ nextgroup=tealRecordAssign,tealInvalid
+	\ skipwhite skipnl skipempty
+syn match tealRecordItem /\K\k*/ contained
+	\ nextgroup=tealSingleTypeAnnotation,tealInvalid
+	\ skipwhite skipnl skipempty
+syn region tealRecordBlock contained
 	\ matchgroup=tealRecord transparent
- 	\ start=/\<record\>/ end=/\<end\>/
-	\ contains=tealRecordItem,
-	\ tealRecordAssign,tealRecordGeneric,tealTableType,
-	\ tealComment,tealLongComment
+	\ start=/\<record\>/ end=/\<end\>/
+	\ contains=tealRecordKeywordName,tealRecordBlock,tealEnumBlock,tealRecordStart,tealRecordTypeDeclaration,tealRecordItem,tealTableType,tealComment,tealLongComment
+syn match tealRecordStart /\(\<record\>\)\@6<=\s*/ contained
+	\ nextgroup=tealRecordName,tealRecordGeneric
+	\ skipwhite skipnl skipempty
+syn match tealRecordName /\K\k*/ contained
+	\ nextgroup=tealRecordGeneric
+	\ skipwhite skipnl skipempty
 syn region tealRecordGeneric contained transparent
 	\ matchgroup=tealParens
-	\ start=/\(\<record\>\)\@6<=\s*</ end=/>/
+	\ start=/</ end=/>/
 	\ contains=tealGeneric
-syn match tealRecordItem /\K\k*/ contained
-	\ nextgroup=tealSingleTypeAnnotation,tealRecordAssign,tealInvalid
+syn match tealRecordTypeDeclaration /type\s*\K\k*\s*=/ contained
+	\ contains=tealRecordTypeKeyword,tealOperator
+	\ nextgroup=@tealSingleType,@tealNewType,tealInvalid
 	\ skipwhite skipnl skipempty
-syn match tealRecordAssign /=/ contained
-	\ nextgroup=@tealNewType,tealInvalid
-	\ skipwhite skipnl skipempty
-hi def link tealRecordAssign tealOperator
+syn keyword tealRecordTypeKeyword type contained
 " }}}
 " {{{ enum ... end
+syn match tealEnumStart /\(\<enum\>\)\@4<=\s*/ contained
+	\ nextgroup=tealEnumName
+	\ skipwhite skipnl skipempty
+syn match tealEnumName /\K\k*/ contained
 syn region tealEnumBlock
 	\ matchgroup=tealEnum transparent
 	\ start="\<enum\>" end="\<end\>"
-	\ contains=tealString,tealLongString,tealComment,tealLongComment,tealInvalid
+	\ contains=tealEnumStart,tealString,tealLongString,tealComment,tealLongComment,tealInvalid
+" }}}
+" {{{ record entries with names 'enum' and 'record'
+syn match tealRecordKeywordName /\(enum\|record\)\s*\ze:/ contained
+	\ contains=tealRecordItem
+	\ nextgroup=tealSingleTypeAnnotation,tealInvalid
+	\ skipwhite skipnl skipempty
 " }}}
 " {{{ if ... then, elseif ... then, then ... end, else
+syn keyword tealError then
 syn region tealIfThen
 	\ transparent matchgroup=tealIfStatement
 	\ start=/\<if\>/ end=/\<then\>/me=e-4
 	\ contains=@tealExpression
-syn region tealElseifThen
+	\ nextgroup=tealThenEnd
+	\ skipwhite skipnl skipempty
+syn region tealElseifThen contained
 	\ transparent matchgroup=tealIfStatement
 	\ start=/\<elseif\>/ end=/\<then\>/
 	\ contains=@tealExpression
 syn region tealThenEnd
 	\ transparent matchgroup=tealIfStatement
 	\ start=/\<then\>/ end=/\<end\>/
-	\ contains=@tealStatement,tealElseifThen,tealElse
-syn keyword tealElse else contained
+	\ contains=tealElseifThen,tealElse,@tealStatement
+syn keyword tealElse else contained containedin=tealThenEnd
 " }}}
 " {{{ for ... do ... end, in
 syn region tealForDo
@@ -452,6 +479,7 @@ syn match tealBuiltIn /\<utf8\.offset\>/
 
 " }}}
 " {{{ Highlight
+hi def link tealTypeDeclaration       StorageClass
 hi def link tealKeyword               Keyword
 hi def link tealFunction              Keyword
 hi def link tealFunctionName          Function
@@ -465,7 +493,6 @@ hi def link tealSelf                  Special
 hi def link tealTable                 Structure
 hi def link tealBasicType             Type
 hi def link tealFunctionType          Type
-hi def link tealNominalFuncType       Keyword
 hi def link tealAttribute             StorageClass
 hi def link tealParens                Identifier
 hi def link tealRecord                Keyword
@@ -492,6 +519,13 @@ hi def link tealError                 Error
 hi def link tealInvalid               Error
 hi def link tealGeneric               Type
 hi def link tealTodo                  Todo
+hi def link tealRecordName            tealBasicType
+hi def link tealRecordType            tealBasicType
+hi def link tealRecordTypeKeyword     tealKeyword
+hi def link tealRecordAssign          tealOperator
+hi def link tealEnumName              tealBasicType
+hi def link tealTypeDeclarationEq     tealOperator
+hi def link tealTypeDeclarationName   tealBasicType
 " }}}
 
 let b:current_syntax = "teal"
