@@ -251,10 +251,16 @@ syn match tealFunctionArgComma contained /,/
 	\ skipwhite skipempty skipnl
 " }}}
 " {{{ record ... end
-syn region tealRecordBlock
+syn match tealRecordType /\K\k*/ contained
+	\ nextgroup=tealRecordAssign,tealInvalid
+	\ skipwhite skipnl skipempty
+syn match tealRecordItem /\K\k*/ contained
+	\ nextgroup=tealSingleTypeAnnotation,tealInvalid
+	\ skipwhite skipnl skipempty
+syn region tealRecordBlock contained
 	\ matchgroup=tealRecord transparent
 	\ start=/\<record\>/ end=/\<end\>/
-	\ contains=tealRecordStart,tealRecordTypeDeclaration,tealRecordItem,tealTableType,tealComment,tealLongComment
+	\ contains=tealRecordKeywordName,tealRecordBlock,tealEnumBlock,tealRecordStart,tealRecordTypeDeclaration,tealRecordItem,tealTableType,tealComment,tealLongComment
 syn match tealRecordStart /\(\<record\>\)\@6<=\s*/ contained
 	\ nextgroup=tealRecordName,tealRecordGeneric
 	\ skipwhite skipnl skipempty
@@ -265,12 +271,6 @@ syn region tealRecordGeneric contained transparent
 	\ matchgroup=tealParens
 	\ start=/</ end=/>/
 	\ contains=tealGeneric
-syn match tealRecordType /\K\k*/ contained
-	\ nextgroup=tealRecordAssign,tealInvalid
-	\ skipwhite skipnl skipempty
-syn match tealRecordItem /\K\k*/ contained
-	\ nextgroup=tealSingleTypeAnnotation,tealInvalid
-	\ skipwhite skipnl skipempty
 syn match tealRecordTypeDeclaration /type\s*\K\k*\s*=/ contained
 	\ contains=tealRecordTypeKeyword,tealOperator
 	\ nextgroup=@tealSingleType,@tealNewType,tealInvalid
@@ -286,6 +286,12 @@ syn region tealEnumBlock
 	\ matchgroup=tealEnum transparent
 	\ start="\<enum\>" end="\<end\>"
 	\ contains=tealEnumStart,tealString,tealLongString,tealComment,tealLongComment,tealInvalid
+" }}}
+" {{{ record entries with names 'enum' and 'record'
+syn match tealRecordKeywordName /\(enum\|record\)\s*\ze:/ contained
+	\ contains=tealRecordItem
+	\ nextgroup=tealSingleTypeAnnotation,tealInvalid
+	\ skipwhite skipnl skipempty
 " }}}
 " {{{ if ... then, elseif ... then, then ... end, else
 syn keyword tealError then
