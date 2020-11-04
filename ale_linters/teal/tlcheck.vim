@@ -15,7 +15,7 @@ function! ale_linters#teal#tlcheck#Handle(buffer, lines) abort
     "
     " artal.tl:159:17: shadowing definition of loop variable 'i' on line 106
     " artal.tl:182:7: unused loop variable 'i'
-    let l:pattern = '^\(.*\):\(\d\+\):\(\d\+\): \(.\+\)$'
+    let l:pattern = '^\(.\{-}\):\(\d\+\):\(\d\+\): \(.\+\)$'
     let l:output = []
 
     for l:match in ale#util#GetMatches(a:lines, l:pattern)
