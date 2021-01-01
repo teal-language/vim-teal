@@ -254,13 +254,15 @@ syn match tealFunctionArgComma contained /,/
 syn match tealRecordType /\K\k*/ contained
 	\ nextgroup=tealRecordAssign,tealInvalid
 	\ skipwhite skipnl skipempty
-syn match tealRecordItem /\K\k*/ contained
+syn match tealRecordEntry /\K\k*/ contained
 	\ nextgroup=tealSingleTypeAnnotation,tealInvalid
 	\ skipwhite skipnl skipempty
+syn cluster tealRecordItem contains=tealRecordEntry
 syn region tealRecordBlock contained
 	\ matchgroup=tealRecord transparent
 	\ start=/\<record\>/ end=/\<end\>/
-	\ contains=tealRecordKeywordName,tealRecordBlock,tealEnumBlock,tealRecordStart,tealRecordTypeDeclaration,tealRecordItem,tealTableType,tealComment,tealLongComment
+	\ contains=tealRecordKeywordName,tealRecordStart,@tealRecordItem,tealTableType,tealComment,tealLongComment
+syn cluster tealRecordItem add=tealRecordBlock,tealEnumBlock
 syn match tealRecordStart /\(\<record\>\)\@6<=\s*/ contained
 	\ nextgroup=tealRecordName,tealRecordGeneric
 	\ skipwhite skipnl skipempty
@@ -271,11 +273,24 @@ syn region tealRecordGeneric contained transparent
 	\ matchgroup=tealParens
 	\ start=/</ end=/>/
 	\ contains=tealGeneric
+syn keyword tealRecordUserdata userdata contained
+	\ nextgroup=@tealRecordItem
+	\ skipwhite skipnl skipempty
 syn match tealRecordTypeDeclaration /type\s*\K\k*\s*=/ contained
 	\ contains=tealRecordTypeKeyword,tealOperator
 	\ nextgroup=@tealSingleType,@tealNewType,tealInvalid
 	\ skipwhite skipnl skipempty
+syn keyword tealRecordMetamethodKeyword metamethod contained
+syn match tealRecordMetamethod /metamethod\s\+\K\k*/ contained
+	\ contains=tealRecordMetamethodKeyword
+	\ nextgroup=tealSingleTypeAnnotation
+	\ skipwhite skipnl skipempty
+
 syn keyword tealRecordTypeKeyword type contained
+syn cluster tealRecordItem
+	\ add=tealRecordTypeDeclaration,tealRecordUserdata,tealRecordMetamethod
+hi def link tealRecordUserdata Keyword
+hi def link tealRecordMetamethodKeyword Keyword
 " }}}
 " {{{ enum ... end
 syn match tealEnumStart /\(\<enum\>\)\@4<=\s*/ contained
