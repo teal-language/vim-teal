@@ -289,8 +289,6 @@ syn match tealRecordMetamethod /metamethod\s\+\K\k*/ contained
 syn keyword tealRecordTypeKeyword type contained
 syn cluster tealRecordItem
 	\ add=tealRecordTypeDeclaration,tealRecordUserdata,tealRecordMetamethod
-hi def link tealRecordUserdata Keyword
-hi def link tealRecordMetamethodKeyword Keyword
 " }}}
 " {{{ enum ... end
 syn match tealEnumStart /\(\<enum\>\)\@4<=\s*/ contained
@@ -509,7 +507,7 @@ hi def link tealTable                 Structure
 hi def link tealBasicType             Type
 hi def link tealFunctionType          Type
 hi def link tealAttribute             StorageClass
-hi def link tealParens                Identifier
+hi def link tealParens                Normal
 hi def link tealRecord                Keyword
 hi def link tealEnum                  Keyword
 hi def link tealIfStatement           Conditional
@@ -541,6 +539,8 @@ hi def link tealRecordAssign          tealOperator
 hi def link tealEnumName              tealBasicType
 hi def link tealTypeDeclarationEq     tealOperator
 hi def link tealTypeDeclarationName   tealBasicType
+hi def link tealRecordUserdata        Keyword
+hi def link tealRecordMetamethodKeyword Keyword
 " }}}
 
 let b:current_syntax = "teal"
