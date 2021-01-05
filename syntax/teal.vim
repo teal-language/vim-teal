@@ -257,6 +257,11 @@ syn match tealRecordType /\K\k*/ contained
 syn match tealRecordEntry /\K\k*/ contained
 	\ nextgroup=tealSingleTypeAnnotation,tealInvalid
 	\ skipwhite skipnl skipempty
+syn match tealRecordEntry /\[.*\]/ contained
+	\ nextgroup=tealSingleTypeAnnotation,tealInvalid
+	\ contains=tealString,tealLongString
+	\ skipwhite skipnl skipempty
+	\ transparent
 syn cluster tealRecordItem contains=tealRecordEntry
 syn region tealRecordBlock contained
 	\ matchgroup=tealRecord transparent
