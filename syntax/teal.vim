@@ -242,10 +242,13 @@ syn region tealFunctionArgs contained transparent
 	\ nextgroup=tealTypeAnnotation
 	\ skipwhite skipempty skipnl
 syn match tealFunctionArgName contained /\K\k*/
-	\ nextgroup=tealSingleTypeAnnotation,tealFunctionArgComma,tealInvalid
+	\ nextgroup=tealSingleTypeAnnotation,tealFunctionArgComma,tealFunctionOptionalArgMark,tealInvalid
 	\ skipwhite skipempty skipnl
 syn match tealFunctionArgComma contained /,/
 	\ nextgroup=tealFunctionArgName
+	\ skipwhite skipempty skipnl
+syn match tealFunctionOptionalArgMark contained '?'
+	\ nextgroup=tealTypeDeclaration
 	\ skipwhite skipempty skipnl
 " }}}
 " {{{ record ... end
@@ -495,55 +498,56 @@ syn match tealBuiltIn /\<utf8\.offset\>/
 
 " }}}
 " {{{ Highlight
-hi def link tealTypeDeclaration       StorageClass
-hi def link tealKeyword               Keyword
-hi def link tealFunction              Keyword
-hi def link tealFunctionName          Function
-hi def link tealFunctionArgName       Identifier
-hi def link tealLocal                 Keyword
-hi def link tealGlobal                Keyword
-hi def link tealBreak                 Keyword
-hi def link tealReturn                Keyword
-hi def link tealIn                    Keyword
-hi def link tealSelf                  Special
-hi def link tealTable                 Structure
-hi def link tealBasicType             Type
-hi def link tealFunctionType          Type
-hi def link tealAttribute             StorageClass
-hi def link tealParens                Normal
-hi def link tealRecord                Keyword
-hi def link tealEnum                  Keyword
-hi def link tealIfStatement           Conditional
-hi def link tealElse                  Conditional
-hi def link tealFor                   Repeat
-hi def link tealWhile                 Repeat
-hi def link tealDoEnd                 Keyword
-hi def link tealRepeatUntil           Repeat
-hi def link tealFunctionCall          Function
-hi def link tealGoto                  Keyword
-hi def link tealLabel                 Label
-hi def link tealString                String
-hi def link tealLongString            String
-hi def link tealSpecial               Special
-hi def link tealComment               Comment
-hi def link tealLongComment           Comment
-hi def link tealConstant              Constant
-hi def link tealNumber                Number
-hi def link tealOperator              Operator
-hi def link tealBuiltin               Identifier
-hi def link tealError                 Error
-hi def link tealInvalid               Error
-hi def link tealGeneric               Type
-hi def link tealTodo                  Todo
-hi def link tealRecordName            tealBasicType
-hi def link tealRecordType            tealBasicType
-hi def link tealRecordTypeKeyword     tealKeyword
-hi def link tealRecordAssign          tealOperator
-hi def link tealEnumName              tealBasicType
-hi def link tealTypeDeclarationEq     tealOperator
-hi def link tealTypeDeclarationName   tealBasicType
-hi def link tealRecordUserdata        Keyword
-hi def link tealRecordMetamethodKeyword Keyword
+hi def link tealAttribute                StorageClass
+hi def link tealBasicType                Type
+hi def link tealBreak                    Keyword
+hi def link tealBuiltin                  Identifier
+hi def link tealComment                  Comment
+hi def link tealConstant                 Constant
+hi def link tealDoEnd                    Keyword
+hi def link tealElse                     Conditional
+hi def link tealEnum                     Keyword
+hi def link tealEnumName                 tealBasicType
+hi def link tealError                    Error
+hi def link tealFor                      Repeat
+hi def link tealFunction                 Keyword
+hi def link tealFunctionArgName          Identifier
+hi def link tealFunctionCall             Function
+hi def link tealFunctionName             Function
+hi def link tealFunctionOptionalArgMark  Type
+hi def link tealFunctionType             Type
+hi def link tealGeneric                  Type
+hi def link tealGlobal                   Keyword
+hi def link tealGoto                     Keyword
+hi def link tealIfStatement              Conditional
+hi def link tealIn                       Keyword
+hi def link tealInvalid                  Error
+hi def link tealKeyword                  Keyword
+hi def link tealLabel                    Label
+hi def link tealLocal                    Keyword
+hi def link tealLongComment              Comment
+hi def link tealLongString               String
+hi def link tealNumber                   Number
+hi def link tealOperator                 Operator
+hi def link tealParens                   Normal
+hi def link tealRecord                   Keyword
+hi def link tealRecordAssign             tealOperator
+hi def link tealRecordMetamethodKeyword  Keyword
+hi def link tealRecordName               tealBasicType
+hi def link tealRecordType               tealBasicType
+hi def link tealRecordTypeKeyword        tealKeyword
+hi def link tealRecordUserdata           Keyword
+hi def link tealRepeatUntil              Repeat
+hi def link tealReturn                   Keyword
+hi def link tealSelf                     Special
+hi def link tealSpecial                  Special
+hi def link tealString                   String
+hi def link tealTable                    Structure
+hi def link tealTodo                     Todo
+hi def link tealTypeDeclaration          StorageClass
+hi def link tealTypeDeclarationEq        tealOperator
+hi def link tealTypeDeclarationName      tealBasicType
+hi def link tealWhile                    Repeat
 " }}}
 
 let b:current_syntax = "teal"
