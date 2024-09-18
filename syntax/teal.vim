@@ -267,7 +267,7 @@ syn cluster tealRecordItem contains=tealRecordEntry
 syn region tealRecordBlock contained
 	\ matchgroup=tealRecord transparent
 	\ start=/\<record\>/ end=/\<end\>/
-	\ contains=tealRecordKeywordName,tealRecordStart,@tealRecordItem,tealTableType,tealComment,tealLongComment
+	\ contains=tealInterfaceIs,tealInterfaceWhereGroup,tealRecordKeywordName,tealRecordStart,@tealRecordItem,tealTableType,tealComment,tealLongComment
 syn cluster tealRecordItem add=tealInterfaceBlock,tealRecordBlock,tealEnumBlock
 syn match tealRecordStart /\(\<record\>\)\@6<=\s*/ contained
 	\ nextgroup=tealRecordName,tealRecordGeneric
@@ -279,6 +279,8 @@ syn region tealRecordGeneric contained transparent
 	\ matchgroup=tealParens
 	\ start=/</ end=/>/
 	\ contains=tealGeneric
+	\ nextgroup=@tealRecordItem,tealInterfaceIs
+	\ skipwhite skipnl skipempty
 syn keyword tealRecordUserdata userdata contained
 	\ nextgroup=@tealRecordItem
 	\ skipwhite skipnl skipempty
