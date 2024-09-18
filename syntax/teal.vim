@@ -18,7 +18,7 @@ syn cluster tealBase contains=
 syn cluster tealExpression contains=
 	\ @tealBase,tealParen,tealBuiltin,tealBracket,tealBrace,
 	\ tealOperator,tealFunctionBlock,tealFunctionCall,tealError,
-	\ tealTableConstructor,tealRecordBlock,tealEnumBlock,tealSelf,
+	\ tealTableConstructor,tealInterfaceBlock,tealRecordBlock,tealEnumBlock,tealSelf,
 	\ tealVarargs
 syn cluster tealStatement contains=
 	\ @tealExpression,tealIfThen,tealThenEnd,tealBlock,tealLoop,
@@ -155,7 +155,7 @@ endfunction
 " }}}
 call map(s:typePatterns, {tname, props -> s:MakeSyntaxItem(tname, props)})
 
-syn cluster tealNewType contains=tealRecordBlock,tealEnumBlock
+syn cluster tealNewType contains=tealInterfaceBlock,tealRecordBlock,tealEnumBlock
 " }}}
 " {{{ Function call
 syn match tealFunctionCall /\K\k*\ze\s*\n*\s*\(["'({]\|\[=*\[\)/
@@ -184,7 +184,7 @@ syn match tealTypeDeclarationName /\K\k*/ contained
 	\ nextgroup=tealTypeDeclarationEq,tealInvalid
 	\ skipwhite skipempty skipnl
 syn match tealTypeDeclarationEq /=/ contained
-	\ nextgroup=@tealSingleType,tealRecordBlock,tealEnumBlock
+	\ nextgroup=@tealSingleType,tealInterfaceBlock,tealRecordBlock,tealEnumBlock
 	\ skipwhite skipempty skipnl
 syn region tealAttributeBrackets contained transparent
 	\ matchgroup=tealParens
@@ -200,10 +200,10 @@ syn match tealVarComma /,/ contained
 	\ nextgroup=tealVarName
 	\ skipwhite skipempty skipnl
 syn keyword tealLocal local
-	\ nextgroup=tealFunctionBlock,tealRecordBlock,tealEnumBlock,tealVarName,tealTypeDeclaration
+	\ nextgroup=tealFunctionBlock,tealInterfaceBlock,tealRecordBlock,tealEnumBlock,tealVarName,tealTypeDeclaration
 	\ skipwhite skipempty skipnl
 syn keyword tealGlobal global
-	\ nextgroup=tealFunctionBlock,tealRecordBlock,tealEnumBlock,tealVarName,tealTypeDeclaration
+	\ nextgroup=tealFunctionBlock,tealInterfaceBlock,tealRecordBlock,tealEnumBlock,tealVarName,tealTypeDeclaration
 	\ skipwhite skipempty skipnl
 syn keyword tealBreak break
 syn keyword tealReturn return
@@ -268,7 +268,7 @@ syn region tealRecordBlock contained
 	\ matchgroup=tealRecord transparent
 	\ start=/\<record\>/ end=/\<end\>/
 	\ contains=tealRecordKeywordName,tealRecordStart,@tealRecordItem,tealTableType,tealComment,tealLongComment
-syn cluster tealRecordItem add=tealRecordBlock,tealEnumBlock
+syn cluster tealRecordItem add=tealInterfaceBlock,tealRecordBlock,tealEnumBlock
 syn match tealRecordStart /\(\<record\>\)\@6<=\s*/ contained
 	\ nextgroup=tealRecordName,tealRecordGeneric
 	\ skipwhite skipnl skipempty
@@ -295,6 +295,36 @@ syn match tealRecordMetamethod /metamethod\s\+\K\k*/ contained
 syn keyword tealRecordTypeKeyword type contained
 syn cluster tealRecordItem
 	\ add=tealRecordTypeDeclaration,tealRecordUserdata,tealRecordMetamethod
+" }}}
+" {{{ interface ... end
+syn region tealInterfaceBlock contained
+	\ matchgroup=tealInterface transparent
+	\ start=/\<interface\>/ end=/\<end\>/
+	\ contains=tealInterfaceIs,tealInterfaceWhereGroup,tealRecordKeywordName,tealInterfaceStart,@tealRecordItem,tealTableType,tealComment,tealLongComment
+syn match tealInterfaceStart /\(\<interface\>\)\@9<=\s*/ contained
+	\ nextgroup=tealInterfaceName,tealInterfaceGeneric
+	\ skipwhite skipnl skipempty
+syn match tealInterfaceName /\K\k*/ contained
+	\ nextgroup=tealInterfaceGeneric,tealInterfaceIs
+	\ skipwhite skipnl skipempty
+syn region tealInterfaceGeneric contained transparent
+	\ matchgroup=tealParens
+	\ start=/</ end=/>/
+	\ contains=tealGeneric
+	\ nextgroup=@tealRecordItem,tealInterfaceIs
+syn keyword tealInterfaceIs is
+	\ contained
+	\ nextgroup=@tealType
+	\ skipwhite skipnl skipempty
+" This is a hack
+" Since the teal grammar is `where <expr>` we can't determine the end of the
+" group without actually parsing, so we (falsely) assume that it spans the
+" rest of the line it's on
+syn region tealInterfaceWhereGroup contained transparent
+	\ start=/\<where\>/ end=/\n/
+	\ contains=tealInferfaceWhere,@tealExpression
+syn keyword tealInterfaceWhere where
+	\ contained containedin=tealInterfaceWhereGroup
 " }}}
 " {{{ enum ... end
 syn match tealEnumStart /\(\<enum\>\)\@4<=\s*/ contained
@@ -529,7 +559,10 @@ hi def link tealLongComment              Comment
 hi def link tealLongString               String
 hi def link tealNumber                   Number
 hi def link tealOperator                 Operator
+hi def link tealInterfaceIs              Operator
+hi def link tealInterfaceWhere           Operator
 hi def link tealParens                   Normal
+hi def link tealInterface                Keyword
 hi def link tealRecord                   Keyword
 hi def link tealRecordAssign             tealOperator
 hi def link tealRecordMetamethodKeyword  Keyword
