@@ -29,7 +29,7 @@ let s:begin_block_open_patt = '\C^[\t ]*\%(if\|for\|while\|repeat\|else\|elseif\
 let s:end_block_open_patt = '\C\%((\|{\|then\|do\)[\t ]*$'
 let s:block_close_patt = '\C^[\t ]*\%(\%(end\|else\|elseif\|until\)\>\|}\|)\)'
 
-let s:middle_patt = '\C\<\%(function\|interface\|record\|enum\)\>'
+let s:middle_patt = '\C\<\%(function\|macroexp\|interface\|record\|enum\)\>'
 let s:ignore_patt = 'String$\|Comment$\|Type$'
 
 let s:starts_with_bin_op = '\C^[\t ]*\([<>=~^&|*/%+-.:]\|\%(or\|and\|is\|as\)\>\)'

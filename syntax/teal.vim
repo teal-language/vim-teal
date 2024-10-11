@@ -200,7 +200,7 @@ syn match tealVarComma /,/ contained
 	\ nextgroup=tealVarName
 	\ skipwhite skipempty skipnl
 syn keyword tealLocal local
-	\ nextgroup=tealFunctionBlock,tealInterfaceBlock,tealRecordBlock,tealEnumBlock,tealVarName,tealTypeDeclaration
+	\ nextgroup=tealFunctionBlock,tealMacroexpBlock,tealInterfaceBlock,tealRecordBlock,tealEnumBlock,tealVarName,tealTypeDeclaration
 	\ skipwhite skipempty skipnl
 syn keyword tealGlobal global
 	\ nextgroup=tealFunctionBlock,tealInterfaceBlock,tealRecordBlock,tealEnumBlock,tealVarName,tealTypeDeclaration
@@ -223,6 +223,10 @@ syn region tealBracket transparent
 syn region tealFunctionBlock transparent
 	\ matchgroup=tealFunction
 	\ start=/\<function\>/ end=/\<end\>/
+	\ contains=@tealStatement,tealFunctionStart
+syn region tealMacroexpBlock transparent
+	\ matchgroup=tealFunction
+	\ start=/\<macroexp\>/ end=/\<end\>/
 	\ contains=@tealStatement,tealFunctionStart
 syn match tealFunctionStart /\(\<function\>\)\@8<=\s*/ contained
 	\ nextgroup=tealFunctionName,tealFunctionGeneric,tealFunctionArgs
