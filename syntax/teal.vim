@@ -538,6 +538,7 @@ hi def link tealAttribute                StorageClass
 hi def link tealBasicType                Type
 hi def link tealBreak                    Keyword
 hi def link tealBuiltin                  Identifier
+hi def link tealComma                    Delimiter
 hi def link tealComment                  Comment
 hi def link tealConstant                 Constant
 hi def link tealDoEnd                    Keyword
@@ -557,6 +558,10 @@ hi def link tealGlobal                   Keyword
 hi def link tealGoto                     Keyword
 hi def link tealIfStatement              Conditional
 hi def link tealIn                       Keyword
+hi def link tealInterface                Keyword
+hi def link tealInterfaceIs              Operator
+hi def link tealInterfaceName            tealBasicType
+hi def link tealInterfaceWhere           Operator
 hi def link tealInvalid                  Error
 hi def link tealKeyword                  Keyword
 hi def link tealLabel                    Label
@@ -565,10 +570,8 @@ hi def link tealLongComment              Comment
 hi def link tealLongString               String
 hi def link tealNumber                   Number
 hi def link tealOperator                 Operator
-hi def link tealInterfaceIs              Operator
-hi def link tealInterfaceWhere           Operator
 hi def link tealParens                   Normal
-hi def link tealInterface                Keyword
+hi def link tealQuote                    Delimiter
 hi def link tealRecord                   Keyword
 hi def link tealRecordAssign             tealOperator
 hi def link tealRecordMetamethodKeyword  Keyword
@@ -583,6 +586,7 @@ hi def link tealSpecial                  Special
 hi def link tealString                   String
 hi def link tealTable                    Structure
 hi def link tealTodo                     Todo
+hi def link tealTypeComma                tealComma
 hi def link tealTypeDeclaration          StorageClass
 hi def link tealTypeDeclarationEq        tealOperator
 hi def link tealTypeDeclarationName      tealBasicType
