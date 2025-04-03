@@ -400,9 +400,9 @@ syn keyword tealConstant nil true false
 " }}}
 " {{{ Strings
 syn match tealSpecial contained #\\[\\abfnrtvz'"]\|\\x[[:xdigit:]]\{2}\|\\[[:digit:]]\{,3}#
-syn region tealLongString matchgroup=tealString start="\[\z(=*\)\[" end="\]\z1\]" contains=@Spell
-syn region tealString  start=+'+ end=+'\|$+ skip=+\\\\\|\\'+ contains=tealSpecial,@Spell
-syn region tealString  start=+"+ end=+"\|$+ skip=+\\\\\|\\"+ contains=tealSpecial,@Spell
+syn region tealLongString matchgroup=tealQuote start="\[\z(=*\)\[" end="\]\z1\]" contains=@Spell
+syn region tealString     matchgroup=tealQuote start=+'+ end=+'\|$+ skip=+\\\\\|\\'+ contains=tealSpecial,@Spell
+syn region tealString     matchgroup=tealQuote start=+"+ end=+"\|$+ skip=+\\\\\|\\"+ contains=tealSpecial,@Spell
 " }}}
 " {{{ Numbers
 " integer number
