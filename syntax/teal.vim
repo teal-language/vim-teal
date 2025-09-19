@@ -230,7 +230,13 @@ syn region tealFunctionBlock transparent
 syn region tealMacroexpBlock transparent
 	\ matchgroup=tealFunction
 	\ start=/\<macroexp\>/ end=/\<end\>/
-	\ contains=@tealStatement,tealFunctionStart
+	\ contains=@tealStatement,tealMacroexpStart
+syn match tealMacroexpStart /\(\<macroexp\>\)\@8<=\s*/ contained
+	\ nextgroup=tealFunctionName,tealFunctionGeneric,tealFunctionArgs
+	\ skipwhite skipempty skipnl
+syn match tealMacroexpName /\K\k*\(\.\K\k*\)*\(:\K\k*\)\?/ contained
+	\ nextgroup=tealFunctionGeneric,tealFunctionArgs,tealInvalid
+	\ skipwhite skipempty skipnl
 syn match tealFunctionStart /\(\<function\>\)\@8<=\s*/ contained
 	\ nextgroup=tealFunctionName,tealFunctionGeneric,tealFunctionArgs
 	\ skipwhite skipempty skipnl
