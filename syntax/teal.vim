@@ -39,7 +39,7 @@ syn region tealTableConstructor
 	\ start=/{/ end=/}/
 	\ contains=@tealExpression,tealTableEntryTypeAnnotation
 syn match tealTableEntryTypeAnnotation /:.\{-}\ze=/ contained
-	\ contains=@tealSingleType
+	\ contains=@tealSingleType,tealSingleTypeAnnotationColon
 " }}}
 " {{{ Types
 
@@ -48,8 +48,8 @@ syn match tealUnion /|/ contained nextgroup=@tealType skipwhite skipempty skipnl
 syn match tealSingleUnion /|/ contained nextgroup=@tealSingleType skipwhite skipempty skipnl
 
 syn match tealTypeComma /,/ contained nextgroup=@tealType skipwhite skipempty skipnl
-syn match tealSingleTypeAnnotation /:/ contained nextgroup=@tealSingleType skipwhite skipempty skipnl
-syn match tealTypeAnnotation /:/ contained nextgroup=@tealType skipwhite skipempty skipnl
+syn match tealSingleTypeAnnotationColon /:/ contained nextgroup=@tealSingleType skipwhite skipempty skipnl
+syn match tealTypeAnnotationColon /:/ contained nextgroup=@tealType skipwhite skipempty skipnl
 syn match tealGeneric /\K\k*/ contained
 
 " {{{ Patterns
@@ -85,7 +85,7 @@ let s:typePatterns = {
 	\	'end': ')',
 	\	'matchgroup': 'tealParens',
 	\	'contains': ['@tealType'],
-	\	'nextgroup': ['tealTypeAnnotation'],
+	\	'nextgroup': ['tealTypeAnnotationColon'],
 	\	'dontsub': 1,
 	\ },
 	\ 'tealTableType': {
@@ -192,11 +192,11 @@ syn region tealAttributeBrackets contained transparent
 	\ matchgroup=tealParens
 	\ start=/</ end=/>/
 	\ contains=tealAttribute
-	\ nextgroup=tealVarComma,tealTypeAnnotation
+	\ nextgroup=tealVarComma,tealTypeAnnotationColon
 	\ skipwhite skipempty skipnl
 syn match tealAttribute contained /\K\k*/
 syn match tealVarName contained /\K\k*/
-	\ nextgroup=tealAttributeBrackets,tealVarComma,tealTypeAnnotation
+	\ nextgroup=tealAttributeBrackets,tealVarComma,tealTypeAnnotationColon
 	\ skipwhite skipempty skipnl
 syn match tealVarComma /,/ contained
 	\ nextgroup=tealVarName
@@ -244,11 +244,11 @@ syn region tealFunctionGeneric contained transparent
 syn region tealFunctionArgs contained transparent
 	\ matchgroup=tealParens
 	\ start=/(/ end=/)/
-	\ contains=tealFunctionArgName,tealFunctionArgComma,tealSingleTypeAnnotation,@tealComments
-	\ nextgroup=tealTypeAnnotation
+	\ contains=tealFunctionArgName,tealFunctionArgComma,tealSingleTypeAnnotationColon,@tealComments
+	\ nextgroup=tealTypeAnnotationColon
 	\ skipwhite skipempty skipnl
 syn match tealFunctionArgName contained /\K\k*/
-	\ nextgroup=tealSingleTypeAnnotation,tealFunctionArgComma,tealFunctionOptionalArgMark,tealInvalid
+	\ nextgroup=tealSingleTypeAnnotationColon,tealFunctionArgComma,tealFunctionOptionalArgMark,tealInvalid
 	\ skipwhite skipempty skipnl
 syn match tealFunctionArgComma contained /,/
 	\ nextgroup=tealFunctionArgName
@@ -262,11 +262,13 @@ syn match tealRecordType /\K\k*/ contained
 	\ nextgroup=tealRecordAssign,tealInvalid
 	\ skipwhite skipnl skipempty
 syn match tealRecordEntry /\K\k*/ contained
-	\ nextgroup=tealSingleTypeAnnotation,tealInvalid
+	\ nextgroup=tealSingleTypeAnnotationColon,tealInvalid
 	\ skipwhite skipnl skipempty
-syn match tealRecordEntry /\[.*\]/ contained
-	\ nextgroup=tealSingleTypeAnnotation,tealInvalid
-	\ contains=tealString,tealLongString
+syn region tealRecordEntry contained
+	\ matchgroup=tealBrackets
+	\ start=+\[+ end=+\]+
+	\ nextgroup=tealSingleTypeAnnotationColon,tealInvalid
+	\ contains=@tealComments,tealString,tealLongString
 	\ skipwhite skipnl skipempty
 	\ transparent
 syn cluster tealRecordItem contains=tealRecordEntry
@@ -297,7 +299,7 @@ syn match tealRecordTypeDeclaration /type\s*\K\k*\s*=/ contained
 syn keyword tealRecordMetamethodKeyword metamethod contained
 syn match tealRecordMetamethod /metamethod\s\+\K\k*/ contained
 	\ contains=tealRecordMetamethodKeyword
-	\ nextgroup=tealSingleTypeAnnotation
+	\ nextgroup=tealSingleTypeAnnotationColon
 	\ skipwhite skipnl skipempty
 
 syn keyword tealRecordTypeKeyword type contained
@@ -345,9 +347,9 @@ syn region tealEnumBlock
 	\ contains=tealEnumStart,tealString,tealLongString,@tealComments,tealInvalid
 " }}}
 " {{{ record entries with names 'enum' and 'record'
-syn match tealRecordKeywordName /\(enum\|record\)\s*\ze:/ contained
+syn match tealRecordKeywordName /\(enum\|record\|interface\|where\)\s*\ze:/ contained
 	\ contains=tealRecordItem
-	\ nextgroup=tealSingleTypeAnnotation,tealInvalid
+	\ nextgroup=tealSingleTypeAnnotationColon,tealInvalid
 	\ skipwhite skipnl skipempty
 " }}}
 " {{{ if ... then, elseif ... then, then ... end, else
