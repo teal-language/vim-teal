@@ -175,6 +175,7 @@ syn match tealVarargs /\.\.\./
 " {{{ Comments
 syn match tealComment "\%^#!.*$"
 syn match tealComment /--.*$/ contains=tealTodo,@Spell
+syn match tealPragma /--#pragma.*$/
 syn keyword tealTodo contained TODO todo FIXME fixme TBD tbd XXX
 syn region tealLongComment start=/--\[\z(=*\)\[/ end=/\]\z1\]/ contains=tealTodo,@Spell
 " }}}
