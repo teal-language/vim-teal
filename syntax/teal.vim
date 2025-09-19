@@ -12,8 +12,10 @@ set cpo&vim
 syn case match
 syn sync fromstart
 
+syn cluster tealComments contains=
+	\ tealComment,tealLongComment,tealPragma
 syn cluster tealBase contains=
-	\ tealComment,tealLongComment,
+	\ @tealComments,
 	\ tealConstant,tealNumber,tealString,tealLongString
 syn cluster tealExpression contains=
 	\ @tealBase,tealParen,tealBuiltin,tealBracket,tealBrace,
@@ -131,7 +133,7 @@ function s:MakeSyntaxItem(typeName, props)
 		let cmd .= '+ '
 		let cmd .= 'contained '
 		if exists("a:props.contains")
-			let cmd .= 'contains=' . join(a:props.contains, ",") . ' '
+			let cmd .= 'contains=@tealComments,' . join(a:props.contains, ",") . ' '
 		endif
 		let cmd .= 'nextgroup='
 		if exists("a:props.nextgroup")
@@ -174,7 +176,7 @@ syn match tealVarargs /\.\.\./
 syn match tealComment "\%^#!.*$"
 syn match tealComment /--.*$/ contains=tealTodo,@Spell
 syn keyword tealTodo contained TODO todo FIXME fixme TBD tbd XXX
-syn region tealLongComment start=/--\[\z(=*\)\[/ end=/\]\z1\]/
+syn region tealLongComment start=/--\[\z(=*\)\[/ end=/\]\z1\]/ contains=tealTodo,@Spell
 " }}}
 " {{{ local ... <const>, global ... <const>, local type ..., break, return, self
 syn keyword tealTypeDeclaration type contained
@@ -242,7 +244,7 @@ syn region tealFunctionGeneric contained transparent
 syn region tealFunctionArgs contained transparent
 	\ matchgroup=tealParens
 	\ start=/(/ end=/)/
-	\ contains=tealFunctionArgName,tealFunctionArgComma,tealSingleTypeAnnotation
+	\ contains=tealFunctionArgName,tealFunctionArgComma,tealSingleTypeAnnotation,@tealComments
 	\ nextgroup=tealTypeAnnotation
 	\ skipwhite skipempty skipnl
 syn match tealFunctionArgName contained /\K\k*/
@@ -271,7 +273,7 @@ syn cluster tealRecordItem contains=tealRecordEntry
 syn region tealRecordBlock contained
 	\ matchgroup=tealRecord transparent
 	\ start=/\<record\>/ end=/\<end\>/
-	\ contains=tealInterfaceIs,tealInterfaceWhereGroup,tealRecordKeywordName,tealRecordStart,@tealRecordItem,tealTableType,tealComment,tealLongComment
+	\ contains=tealInterfaceIs,tealInterfaceWhereGroup,tealRecordKeywordName,tealRecordStart,@tealRecordItem,tealTableType,@tealComment
 syn cluster tealRecordItem add=tealInterfaceBlock,tealRecordBlock,tealEnumBlock
 syn match tealRecordStart /\(\<record\>\)\@6<=\s*/ contained
 	\ nextgroup=tealRecordName,tealRecordGeneric
@@ -306,7 +308,7 @@ syn cluster tealRecordItem
 syn region tealInterfaceBlock contained
 	\ matchgroup=tealInterface transparent
 	\ start=/\<interface\>/ end=/\<end\>/
-	\ contains=tealInterfaceIs,tealInterfaceWhereGroup,tealRecordKeywordName,tealInterfaceStart,@tealRecordItem,tealTableType,tealComment,tealLongComment
+	\ contains=tealInterfaceIs,tealInterfaceWhereGroup,tealRecordKeywordName,tealInterfaceStart,@tealRecordItem,tealTableType,@tealComments
 syn match tealInterfaceStart /\(\<interface\>\)\@9<=\s*/ contained
 	\ nextgroup=tealInterfaceName,tealInterfaceGeneric
 	\ skipwhite skipnl skipempty
@@ -340,7 +342,7 @@ syn match tealEnumName /\K\k*/ contained
 syn region tealEnumBlock
 	\ matchgroup=tealEnum transparent
 	\ start="\<enum\>" end="\<end\>"
-	\ contains=tealEnumStart,tealString,tealLongString,tealComment,tealLongComment,tealInvalid
+	\ contains=tealEnumStart,tealString,tealLongString,@tealComments,tealInvalid
 " }}}
 " {{{ record entries with names 'enum' and 'record'
 syn match tealRecordKeywordName /\(enum\|record\)\s*\ze:/ contained
