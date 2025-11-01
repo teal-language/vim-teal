@@ -295,7 +295,6 @@ syn region tealRecordGeneric contained transparent
 	\ start=/</ end=/>/
 	\ contains=tealGeneric
 	\ nextgroup=@tealRecordItem,tealInterfaceIs
-	\ skipwhite skipnl skipempty
 syn keyword tealRecordUserdata userdata contained
 	\ nextgroup=@tealRecordItem
 	\ skipwhite skipnl skipempty
